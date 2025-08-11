@@ -1,4 +1,4 @@
-﻿# 🎨 ColorPaletteExtractor
+﻿# 🎨 ChromaCraft
 
 *Extract and adjust color palettes from images based on mood..*  
 
@@ -47,6 +47,7 @@ I wanted to create a tool that uses AI to assist artists. This tool allows users
 - PNG download coming
 ## 📄 License
 - MIT
+
 
 
 
