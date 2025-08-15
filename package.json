@@ -1,0 +1,24 @@
+{
+  "name": "chromacraft",
+  "version": "1.0.0",
+  "description": "AI-Powered Color Palette Extraction & Mood Adjustment",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"pnpm run dev:backend\" \"pnpm run dev:frontend\"",
+    "dev:frontend": "cd frontend && pnpm run dev",
+    "dev:backend": "cd backend && start_backend.bat",
+    "build": "cd frontend && pnpm run build",
+    "start": "concurrently \"pnpm run start:backend\" \"pnpm run start:frontend\"",
+    "start:frontend": "cd frontend && pnpm run start",
+    "start:backend": "cd backend && start_backend.bat",
+    "install:all": "pnpm install && cd frontend && pnpm install",
+    "setup:backend": "cd backend && python -m venv venv && venv\\Scripts\\activate && pip install -r requirements.txt",
+    "clean": "cd frontend && rm -rf .next node_modules && cd ../backend && rm -rf __pycache__"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "workspaces": [
+    "frontend"
+  ]
+}
