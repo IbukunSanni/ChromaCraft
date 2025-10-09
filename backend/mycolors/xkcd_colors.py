@@ -40,8 +40,9 @@ import os
 # Get the directory of the current script
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
-# Path to the JSON file in the same folder
-file_path = os.path.join(script_dir, "color_names.json")
+# Path to the JSON file in the utils folder
+utils_dir = os.path.join(os.path.dirname(script_dir), "utils")
+file_path = os.path.join(utils_dir, "color_names.json")
 
 # Load the JSON content
 with open(file_path, "r") as f:
