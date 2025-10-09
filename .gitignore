@@ -194,3 +194,320 @@ celerybeat.pid
 
 # Kiro IDE
 .kiro/
+
+# ==========================================
+# AI/ML SPECIFIC
+# ==========================================
+
+# Model files and weights
+*.pkl
+*.joblib
+*.h5
+*.hdf5
+*.pb
+*.onnx
+*.tflite
+*.pt
+*.pth
+*.safetensors
+model_weights/
+models/
+checkpoints/
+
+# Hugging Face cache
+.cache/huggingface/
+.cache/transformers/
+hf_cache/
+transformers_cache/
+
+# OpenAI/LLM cache and logs
+openai_cache/
+llm_cache/
+embeddings_cache/
+vector_store/
+
+# Training data and datasets
+data/raw/
+data/processed/
+data/external/
+datasets/
+training_data/
+*.csv.gz
+*.jsonl
+*.parquet
+
+# Experiment tracking
+mlruns/
+wandb/
+.neptune/
+tensorboard_logs/
+experiments/
+artifacts/
+
+# ==========================================
+# ENVIRONMENT & SECRETS
+# ==========================================
+
+# Additional environment files
+.env.*
+!.env.example
+!.env.template
+secrets.json
+secrets.yaml
+secrets.yml
+api_keys.json
+credentials.json
+
+# Cloud credentials
+.aws/
+.gcp/
+.azure/
+service-account-*.json
+
+# Database credentials
+database.env
+db.env
+
+# ==========================================
+# DEPLOYMENT & INFRASTRUCTURE
+# ==========================================
+
+# Docker
+Dockerfile.*
+!Dockerfile
+!Dockerfile.example
+docker-compose.override.yml
+docker-compose.*.yml
+!docker-compose.yml
+!docker-compose.example.yml
+.dockerignore
+
+# Kubernetes
+*.kubeconfig
+secrets.yaml
+configmaps.yaml
+
+# Terraform
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+.terraform/
+.terraform.lock.hcl
+terraform.tfplan
+terraform.tfstate.backup
+
+# Pulumi
+Pulumi.*.yaml
+!Pulumi.yaml
+
+# Serverless
+.serverless/
+.serverless_nextjs/
+
+# Vercel
+.vercel
+
+# Netlify
+.netlify/
+
+# ==========================================
+# DEVELOPMENT TOOLS
+# ==========================================
+
+# Pre-commit
+.pre-commit-config.yaml
+
+# Linting and formatting
+.pylintrc
+.flake8
+.black
+.isort.cfg
+pyproject.toml.backup
+
+# Documentation
+docs/_build/
+docs/build/
+.sphinx-build/
+
+# Package managers
+Poetry.lock
+Pipfile.lock
+yarn.lock
+package-lock.json
+!pnpm-lock.yaml
+
+# ==========================================
+# RUNTIME & CACHE FILES
+# ==========================================
+
+# Additional Python cache
+*.pyc.bak
+__pycache__.bak/
+.pytest_cache.bak/
+
+# Node.js additional
+.npm-cache/
+.yarn-cache/
+.pnpm-store/
+.turbo/
+
+# Build artifacts
+build/
+dist/
+out/
+*.map
+
+# ==========================================
+# TEMPORARY & BACKUP FILES
+# ==========================================
+
+# Backup files
+*.backup
+*.bak
+*.orig
+*.tmp
+*~
+*.swp
+*.swo
+*.save
+
+# Log files
+*.log.*
+log/
+logs/
+*.access.log
+*.error.log
+
+# ==========================================
+# PLATFORM SPECIFIC
+# ==========================================
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# ==========================================
+# PROJECT SPECIFIC
+# ==========================================
+
+# ChromaCraft specific
+color_models/
+palette_cache/
+generated_palettes/
+user_uploads/
+static/generated/
+
+# Test files and samples
+test_images/
+sample_data/
+fixtures/
+
+# Performance profiling
+*.prof
+profile_*
+
+# Local configuration overrides
+local_settings.py
+local_config.json
+development.json
+production.json
+
+# IDE specific files
+*.code-workspace
+.vscode/settings.json
+.vscode/launch.json
+.vscode/extensions.json
+!.vscode/extensions.json.example
+
+# JetBrains
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*.un~
+Session.vim
+.netrwhist
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# ==========================================
+# SECURITY
+# ==========================================
+
+# Never commit these
+*.pem
+*.key
+*.crt
+*.cert
+*.p12
+*.pfx
+rsa_key
+id_rsa
+id_dsa
+known_hosts
+
+# API keys and tokens (additional patterns)
+*api_key*
+*secret_key*
+*access_token*
+*refresh_token*
+*private_key*
+config/secrets/
+
+# ==========================================
+# MONITORING & ANALYTICS
+# ==========================================
+
+# Error tracking
+sentry_debug_meta/
+
+# Performance monitoring
+*.perf
+perf.data*
+
+# Application monitoring
+newrelic.ini
+
+# ==========================================
+# END OF FILE
+# ==========================================
