@@ -40,13 +40,14 @@ npm run dev
 ## 📱 App utilization 
 ![image](https://github.com/user-attachments/assets/eab8e5e1-f7fe-42f7-8e70-ca7b0c881c82)
 
-## 🧠 Why I Built This
+## Why I Built This
 I wanted to create a tool that uses AI to assist artists. This tool allows users to upload an image and use generative AI to alter the palettes to a particular mood
 
-## 📌 TODO
+## TODO
 - PNG download coming
-## 📄 License
+## License
 - MIT
+
 
 
 
