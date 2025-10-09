@@ -1,238 +1,89 @@
-# Dependencies
+# ==========================================
+# CHROMACRAFT - CLEAN GITIGNORE
+# ==========================================
+
+# ==========================================
+# ENVIRONMENT & SECRETS
+# ==========================================
+.env
+.env.*
+!.env.example
+!.env.template
+*api_key*
+*secret_key*
+*access_token*
+*private_key*
+secrets.*
+credentials.json
+config/secrets/
+
+# ==========================================
+# DEPENDENCIES & PACKAGES
+# ==========================================
 node_modules/
-*/node_modules/
-.pnpm-debug.log*
 .pnpm-store/
-
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-share/python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
-
-# Virtual Environment
-backend/venv/
-backend/.venv/
+.npm/
+.yarn-cache/
 venv/
 .venv/
 ENV/
 env/
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+__pycache__/
+*.py[cod]
+*$py.class
 
-# Next.js
-frontend/.next/
-frontend/out/
-frontend/build/
-frontend/dist/
-
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
-# Runtime data
-pids
-*.pid
-*.seed
-*.pid.lock
-
-# Coverage directory used by tools like istanbul
-coverage/
-*.lcov
-
-# nyc test coverage
-.nyc_output
-
-# Dependency directories
-jspm_packages/
-
-# TypeScript cache
+# ==========================================
+# BUILD & DISTRIBUTION
+# ==========================================
+build/
+dist/
+out/
+.next/
 *.tsbuildinfo
+*.egg-info/
+wheels/
+*.egg
 
-# Optional npm cache directory
-.npm
-
-# Optional eslint cache
-.eslintcache
-
-# Optional stylelint cache
-.stylelintcache
-
-# Microbundle cache
-.rpt2_cache/
-.rts2_cache_cjs/
-.rts2_cache_es/
-.rts2_cache_umd/
-
-# Optional REPL history
-.node_repl_history
-
-# Output of 'npm pack'
-*.tgz
-
-# Yarn Integrity file
-.yarn-integrity
-
-# parcel-bundler cache (https://parceljs.org/)
-.cache
-.parcel-cache
-
-# Next.js build output
-.next
-out
-
-# Nuxt.js build / generate output
-.nuxt
-dist
-
-# Gatsby files
+# ==========================================
+# CACHE & TEMPORARY
+# ==========================================
 .cache/
-public
-
-# Storybook build outputs
-.out
-.storybook-out
-storybook-static
-
-# Temporary folders
-tmp/
-temp/
-
-# Editor directories and files
-.vscode/
-.idea/
-*.swp
-*.swo
+*.log
+*.tmp
+*.backup
+*.bak
 *~
-
-# OS generated files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-
-# FastAPI specific
-*.db
-*.sqlite
-*.sqlite3
-
-# Image uploads (if any)
-uploads/
-static/uploads/
-
-# Testing
 .pytest_cache/
 .coverage
-htmlcov/
-
-# mypy
-.mypy_cache/
-.dmypy.json
-dmypy.json
-
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# IPython
-profile_default/
-ipython_config.py
-
-# pyenv
-.python-version
-
-# Celery stuff
-celerybeat-schedule
-celerybeat.pid
-
-# SageMath parsed files
-*.sage.py
-
-# Spyder project settings
-.spyderproject
-.spyproject
-
-# Rope project settings
-.ropeproject
-
-# mkdocs documentation
-/site
-
-# Pyre type checker
-.pyre/
-
-# pytype static type analyzer
-.pytype/
-
-# Kiro IDE
-.kiro/
+.nyc_output
+.turbo/
 
 # ==========================================
 # AI/ML SPECIFIC
 # ==========================================
-
-# Model files and weights
+# Model files
 *.pkl
-*.joblib
 *.h5
-*.hdf5
-*.pb
-*.onnx
-*.tflite
 *.pt
 *.pth
 *.safetensors
-model_weights/
+*.onnx
 models/
 checkpoints/
+model_weights/
 
-# Hugging Face cache
+# AI caches
 .cache/huggingface/
 .cache/transformers/
-hf_cache/
-transformers_cache/
-
-# OpenAI/LLM cache and logs
 openai_cache/
 llm_cache/
 embeddings_cache/
-vector_store/
 
-# Training data and datasets
+# Training data
 data/raw/
 data/processed/
-data/external/
 datasets/
 training_data/
-*.csv.gz
 *.jsonl
 *.parquet
 
@@ -242,36 +93,10 @@ wandb/
 .neptune/
 tensorboard_logs/
 experiments/
-artifacts/
 
 # ==========================================
-# ENVIRONMENT & SECRETS
+# DEPLOYMENT
 # ==========================================
-
-# Additional environment files
-.env.*
-!.env.example
-!.env.template
-secrets.json
-secrets.yaml
-secrets.yml
-api_keys.json
-credentials.json
-
-# Cloud credentials
-.aws/
-.gcp/
-.azure/
-service-account-*.json
-
-# Database credentials
-database.env
-db.env
-
-# ==========================================
-# DEPLOYMENT & INFRASTRUCTURE
-# ==========================================
-
 # Docker
 Dockerfile.*
 !Dockerfile
@@ -279,235 +104,104 @@ Dockerfile.*
 docker-compose.override.yml
 docker-compose.*.yml
 !docker-compose.yml
-!docker-compose.example.yml
-.dockerignore
 
-# Kubernetes
-*.kubeconfig
-secrets.yaml
-configmaps.yaml
+# Cloud platforms
+.vercel
+.netlify/
+.serverless/
 
-# Terraform
-*.tfstate
-*.tfstate.*
+# Infrastructure as Code
+*.tfstate*
 *.tfvars
 !*.tfvars.example
 .terraform/
-.terraform.lock.hcl
-terraform.tfplan
-terraform.tfstate.backup
-
-# Pulumi
 Pulumi.*.yaml
 !Pulumi.yaml
-
-# Serverless
-.serverless/
-.serverless_nextjs/
-
-# Vercel
-.vercel
-
-# Netlify
-.netlify/
 
 # ==========================================
 # DEVELOPMENT TOOLS
 # ==========================================
-
-# Pre-commit
+# Editors & IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-*
 .pre-commit-config.yaml
 
-# Linting and formatting
-.pylintrc
-.flake8
-.black
-.isort.cfg
-pyproject.toml.backup
-
-# Documentation
-docs/_build/
-docs/build/
-.sphinx-build/
-
-# Package managers
+# Package managers (keep pnpm-lock)
 Poetry.lock
 Pipfile.lock
 yarn.lock
 package-lock.json
 !pnpm-lock.yaml
 
-# ==========================================
-# RUNTIME & CACHE FILES
-# ==========================================
-
-# Additional Python cache
-*.pyc.bak
-__pycache__.bak/
-.pytest_cache.bak/
-
-# Node.js additional
-.npm-cache/
-.yarn-cache/
-.pnpm-store/
-.turbo/
-
-# Build artifacts
-build/
-dist/
-out/
-*.map
-
-# ==========================================
-# TEMPORARY & BACKUP FILES
-# ==========================================
-
-# Backup files
-*.backup
-*.bak
-*.orig
-*.tmp
-*~
-*.swp
-*.swo
-*.save
-
-# Log files
-*.log.*
-log/
-logs/
-*.access.log
-*.error.log
+# Testing & Quality
+coverage/
+htmlcov/
+.eslintcache
+.stylelintcache
+.mypy_cache/
 
 # ==========================================
 # PLATFORM SPECIFIC
 # ==========================================
-
 # Windows
 Thumbs.db
-ehthumbs.db
 Desktop.ini
 $RECYCLE.BIN/
 
 # macOS
 .DS_Store
-.AppleDouble
-.LSOverride
-Icon?
 ._*
-.DocumentRevisions-V100
-.fseventsd
 .Spotlight-V100
-.TemporaryItems
 .Trashes
-.VolumeIcon.icns
-.com.apple.timemachine.donotpresent
 
 # Linux
-*~
 .fuse_hidden*
 .directory
 .Trash-*
-.nfs*
 
 # ==========================================
 # PROJECT SPECIFIC
 # ==========================================
-
-# ChromaCraft specific
+# ChromaCraft files
 color_models/
 palette_cache/
 generated_palettes/
 user_uploads/
 static/generated/
-
-# Test files and samples
 test_images/
 sample_data/
-fixtures/
 
-# Performance profiling
+# Database files
+*.db
+*.sqlite*
+
+# Uploads
+uploads/
+
+# Performance & monitoring
 *.prof
 profile_*
-
-# Local configuration overrides
-local_settings.py
-local_config.json
-development.json
-production.json
-
-# IDE specific files
-*.code-workspace
-.vscode/settings.json
-.vscode/launch.json
-.vscode/extensions.json
-!.vscode/extensions.json.example
-
-# JetBrains
-.idea/
-*.iml
-*.ipr
-*.iws
-
-# Sublime Text
-*.sublime-project
-*.sublime-workspace
-
-# Vim
-*.swp
-*.swo
-*.un~
-Session.vim
-.netrwhist
-
-# Emacs
-*~
-\#*\#
-/.emacs.desktop
-/.emacs.desktop.lock
-*.elc
-auto-save-list
-tramp
-.\#*
+*.perf
 
 # ==========================================
-# SECURITY
+# SECURITY - NEVER COMMIT
 # ==========================================
-
-# Never commit these
 *.pem
 *.key
 *.crt
 *.cert
 *.p12
-*.pfx
-rsa_key
 id_rsa
 id_dsa
 known_hosts
-
-# API keys and tokens (additional patterns)
-*api_key*
-*secret_key*
-*access_token*
-*refresh_token*
-*private_key*
-config/secrets/
+service-account-*.json
 
 # ==========================================
-# MONITORING & ANALYTICS
+# MISC
 # ==========================================
-
-# Error tracking
-sentry_debug_meta/
-
-# Performance monitoring
-*.perf
-perf.data*
-
-# Application monitoring
-newrelic.ini
-
-# ==========================================
-# END OF FILE
-# ==========================================
+.kiro/
+tmp/
+temp/
