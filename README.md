@@ -1,24 +1,24 @@
-﻿# 🎨 ChromaCraft
+﻿# ChromaCraft
 
 *Extract and adjust color palettes from images based on mood..*  
 
 ---
 
-## 🚀 Features  
+## Features  
 - Upload an image and extract colors  
 - Generate mood-based palette variations  
 - Download palettes as PNG  
 
 ---
 
-## 🛠 Tech Stack  
+## Tech Stack  
 - **Frontend:** React / Next.js / Tailwind  
 - **Backend:** FastAPI  
 - **Others:** sentence-transformers, colorsys, Pillow  
 
 ---
 
-## 📦 Installation  
+## Installation  
 
 ```bash
 git clone https://github.com/IbukunSanni/ColorPaletteExtractor.git
@@ -47,6 +47,7 @@ I wanted to create a tool that uses AI to assist artists. This tool allows users
 - PNG download coming
 ## 📄 License
 - MIT
+
 
 
 
