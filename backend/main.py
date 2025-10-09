@@ -1,18 +1,44 @@
 from fastapi import FastAPI, File, UploadFile, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, StreamingResponse
+from pydantic import BaseModel
+from typing import List, Optional
 from utils.color_extractor import extract_colors
 from utils.png_exporter import generate_png_swatch
 from utils.find_closest_color_name import find_closest_color_name
 from utils.mood_adjuster import get_adjustment_weights, adjust_palette_by_mood
+from utils.openai_palette_generator import openai_generator
+from utils.color_harmony import (
+    generate_random_harmonious_palette,
+    validate_color_harmony,
+)
 import time
 import io
 import psutil, os  # ⬅️ NEW: for memory tracking
+from io import BytesIO
 from PIL import Image, UnidentifiedImageError
 from mycolors.xkcd_colors import xkcd_colors
 
 
 app = FastAPI()
+
+
+# Pydantic models for request/response validation
+class RandomPaletteRequest(BaseModel):
+    locked_colors: Optional[List[str]] = None
+    harmony_type: Optional[str] = None
+
+
+class ConceptPaletteRequest(BaseModel):
+    concept: str
+    color_count: Optional[int] = 5
+
+
+class PaletteResponse(BaseModel):
+    colors: List[str]
+    names: List[str]
+    harmony_info: dict
+
 
 # Allow CORS for frontend communication
 app.add_middleware(
@@ -43,6 +69,42 @@ def options_handler(path: str):
 @app.post("/")
 def post_root():
     return {"message": "✅ POST received! FastAPI is working."}
+
+
+@app.post("/generate/random")
+async def generate_random_palette(request: RandomPaletteRequest):
+    """Generate a random harmonious color palette with support for locked colors."""
+    try:
+        print(f"🎨 Generating random palette with harmony: {request.harmony_type}")
+        print(f"🔒 Locked colors: {request.locked_colors}")
+
+        # Generate the palette
+        colors = generate_random_harmonious_palette(
+            harmony_type=request.harmony_type, locked_colors=request.locked_colors or []
+        )
+
+        # Get color names
+        names = [find_closest_color_name(color, xkcd_colors) for color in colors]
+
+        # Validate harmony
+        harmony_type = request.harmony_type or "random"
+        harmony_info = validate_color_harmony(colors, harmony_type)
+
+        # Add locked colors info to harmony_info
+        if request.locked_colors:
+            harmony_info["locked_colors_count"] = len(request.locked_colors)
+            harmony_info["locked_colors"] = request.locked_colors
+
+        print(f"✅ Generated palette: {colors}")
+        print(f"📊 Harmony validation: {harmony_info}")
+
+        return PaletteResponse(colors=colors, names=names, harmony_info=harmony_info)
+
+    except Exception as e:
+        print(f"❌ Error generating random palette: {e}")
+        raise HTTPException(
+            status_code=500, detail=f"Random palette generation failed: {str(e)}"
+        )
 
 
 @app.post("/extract-colors")
@@ -103,6 +165,52 @@ async def export_png(colors: list[str] = Form(...)):
     image.save(buffer, format="PNG")
     buffer.seek(0)
     return StreamingResponse(buffer, media_type="image/png")
+
+
+# 🤖 Generate palette from concept using OpenAI
+@app.post("/generate/concept")
+async def generate_palette_from_concept(request: ConceptPaletteRequest):
+    """Generate a color palette from a concept description using OpenAI."""
+    start = time.time()
+    try:
+        print(f"🤖 Generating palette for concept: '{request.concept}'")
+        print(f"📊 Color count: {request.color_count}")
+        
+        # Generate palette using OpenAI
+        result = await openai_generator.generate_palette_from_concept(
+            concept=request.concept,
+            color_count=request.color_count
+        )
+        
+        # Add timestamp to metadata
+        result["metadata"]["timestamp"] = time.time()
+        
+        # Create response in the same format as other endpoints
+        colors = result["colors"]
+        names = result["names"]
+        
+        # Additional harmony info from OpenAI
+        harmony_info = {
+            "type": result.get("harmony_type", "ai_generated"),
+            "mood": result.get("mood", "generated"),
+            "description": result.get("description", ""),
+            "source": "openai",
+            "model": result["metadata"]["model"]
+        }
+        
+        print(f"✅ Generated {len(colors)} colors in {time.time() - start:.2f}s")
+        print(f"🎨 Colors: {colors}")
+        print(f"💭 Original concept: {result.get('concept', 'N/A')}")
+        print_mem("after /generate/concept")
+        
+        return PaletteResponse(colors=colors, names=names, harmony_info=harmony_info)
+        
+    except Exception as e:
+        print(f"❌ Error in /generate/concept: {e}")
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Concept-based palette generation failed: {str(e)}"
+        )
 
 
 # ✅ NEW: Memory usage monitor

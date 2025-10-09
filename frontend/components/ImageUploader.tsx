@@ -136,11 +136,8 @@ export default function ImageUploader({
             </div>
             <label
               htmlFor="file-input"
-              className="inline-block cursor-pointer px-4 py-2 text-white rounded-lg transition-colors duration-300"
-              style={{ 
-                backgroundColor: 'var(--secondary)',
-                ':hover': { backgroundColor: 'var(--foreground)' }
-              }}
+              className="inline-block cursor-pointer px-4 py-2 text-white rounded-lg transition-colors duration-300 hover:opacity-80"
+              style={{ backgroundColor: 'var(--secondary)' }}
             >
               Choose Different Image
             </label>

@@ -4,6 +4,9 @@ import { useState, useEffect } from "react";
 import Layout from "@/components/Layout";
 import ImageUploader from "@/components/ImageUploader";
 import MoodInput from "@/components/MoodInput";
+import PaletteGenerator from "@/components/PaletteGenerator";
+import ConceptPaletteGenerator from "@/components/ConceptPaletteGenerator";
+import { ColorPalette } from "@/lib/types";
 import { API_BASE_URL } from "@/lib/constants";
 
 export default function Home() {
@@ -13,6 +16,7 @@ export default function Home() {
   const [newPalette, setNewPalette] = useState<string[]>([]);
   const [newColorNames, setNewColorNames] = useState<string[]>([]);
   const [isAdjusting, setIsAdjusting] = useState(false);
+  const [currentPalette, setCurrentPalette] = useState<ColorPalette | null>(null);
 
   const handleAdjustMood = async () => {
     if (!Array.isArray(palette) || palette.length === 0 || !mood) return;
@@ -37,6 +41,34 @@ export default function Home() {
       console.error("Mood adjust failed:", err);
     } finally {
       setIsAdjusting(false);
+    }
+  };
+
+  const handleColorExtracted = (colors: string[]) => {
+    setPalette(colors || []);
+    // Convert to ColorPalette format for the new component
+    if (colors && colors.length > 0) {
+      const colorPalette: ColorPalette = {
+        colors,
+        names: colorNames.length === colors.length ? colorNames : colors.map(() => "Extracted"),
+        metadata: {
+          generationMethod: 'image',
+          timestamp: new Date().toISOString(),
+          source: 'image extraction',
+        },
+      };
+      setCurrentPalette(colorPalette);
+    }
+  };
+
+  const handleColorNamesExtracted = (names: string[]) => {
+    setColorNames(names || []);
+    // Update current palette with names if we have colors
+    if (palette.length > 0 && names && names.length === palette.length) {
+      setCurrentPalette(prev => prev ? {
+        ...prev,
+        names,
+      } : null);
     }
   };
 
@@ -90,10 +122,21 @@ export default function Home() {
 
   return (
     <Layout>
+      {/* AI Concept Palette Generator - UPDATED! */}
+      <ConceptPaletteGenerator 
+        onPaletteGenerated={setCurrentPalette}
+      />
+
+      {/* Palette Generator */}
+      <PaletteGenerator 
+        onPaletteChange={setCurrentPalette}
+        initialPalette={currentPalette}
+      />
+
       {/* Step 1: Image Upload */}
       <ImageUploader
-        onColorExtracted={(colors: string[]) => setPalette(colors || [])}
-        onColorNamesExtracted={(names: string[]) => setColorNames(names || [])}
+        onColorExtracted={handleColorExtracted}
+        onColorNamesExtracted={handleColorNamesExtracted}
       />
 
       {/* Step 2: Show Extracted Colors */}

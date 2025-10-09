@@ -30,12 +30,11 @@ export default function MoodInput({ onMoodChange }: { onMoodChange: (mood: strin
               setMood(e.target.value);
               onMoodChange(e.target.value);
             }}
-            className="w-full border-2 rounded-xl p-4 text-lg focus:outline-none transition-colors duration-300 backdrop-blur-sm"
+            className="w-full border-2 rounded-xl p-4 text-lg focus:outline-none focus:border-blue-500 transition-colors duration-300 backdrop-blur-sm"
             style={{
               borderColor: 'var(--muted)',
               backgroundColor: 'var(--glass-bg)',
-              color: 'var(--foreground)',
-              ':focus': { borderColor: 'var(--primary)' }
+              color: 'var(--foreground)'
             }}
             placeholder="e.g. warm and cozy, dark and mysterious..."
           />
