@@ -5,16 +5,12 @@ import asyncio
 import random
 from typing import List, Dict, Any
 from config import Config
+from constants.ai_constants import AIConstants, OpenAIConstants, ConceptConstants
 import logging
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-# Constants
-MAX_CONCEPT_LENGTH = 200
-RETRY_DELAYS = [1, 2, 4, 8]  # Exponential backoff delays in seconds
-MAX_RETRIES = len(RETRY_DELAYS)
 
 class OpenAIPaletteGenerator:
     def __init__(self):
@@ -34,8 +30,8 @@ class OpenAIPaletteGenerator:
         
         concept = concept.strip()
         
-        if len(concept) > MAX_CONCEPT_LENGTH:
-            raise ValueError(f"Concept must be {MAX_CONCEPT_LENGTH} characters or less. Current length: {len(concept)}")
+        if len(concept) > AIConstants.MAX_CONCEPT_LENGTH:
+            raise ValueError(f"Concept must be {AIConstants.MAX_CONCEPT_LENGTH} characters or less. Current length: {len(concept)}")
         
         return concept
     
@@ -90,9 +86,9 @@ class OpenAIPaletteGenerator:
         """Call OpenAI API with exponential backoff retry logic"""
         last_exception = None
         
-        for attempt in range(MAX_RETRIES):
+        for attempt in range(AIConstants.MAX_RETRIES):
             try:
-                logger.info(f"🔄 OpenAI API call attempt {attempt + 1}/{MAX_RETRIES}")
+                logger.info(f"🔄 OpenAI API call attempt {attempt + 1}/{AIConstants.MAX_RETRIES}")
                 
                 response = await self.client.chat.completions.create(
                     model=self.model,
@@ -100,8 +96,8 @@ class OpenAIPaletteGenerator:
                         {"role": "system", "content": system_message},
                         {"role": "user", "content": user_message}
                     ],
-                    temperature=0.7,  # Some creativity, but not too random
-                    max_tokens=500,
+                    temperature=AIConstants.DEFAULT_TEMPERATURE,
+                    max_tokens=AIConstants.MAX_OPENAI_TOKENS,
                     response_format={"type": "json_object"}
                 )
                 
@@ -111,32 +107,32 @@ class OpenAIPaletteGenerator:
             except openai.RateLimitError as e:
                 logger.warning(f"⏳ Rate limit hit on attempt {attempt + 1}: {e}")
                 last_exception = e
-                if attempt < MAX_RETRIES - 1:
-                    delay = RETRY_DELAYS[attempt] + random.uniform(0, 1)  # Add jitter
+                if attempt < AIConstants.MAX_RETRIES - 1:
+                    delay = AIConstants.RETRY_DELAYS[attempt] + random.uniform(0, 1)  # Add jitter
                     logger.info(f"🔄 Retrying in {delay:.1f} seconds...")
                     await asyncio.sleep(delay)
                 
             except openai.APITimeoutError as e:
                 logger.warning(f"⏰ Timeout on attempt {attempt + 1}: {e}")
                 last_exception = e
-                if attempt < MAX_RETRIES - 1:
-                    delay = RETRY_DELAYS[attempt]
+                if attempt < AIConstants.MAX_RETRIES - 1:
+                    delay = AIConstants.RETRY_DELAYS[attempt]
                     logger.info(f"🔄 Retrying in {delay} seconds...")
                     await asyncio.sleep(delay)
                     
             except openai.APIConnectionError as e:
                 logger.warning(f"🔌 Connection error on attempt {attempt + 1}: {e}")
                 last_exception = e
-                if attempt < MAX_RETRIES - 1:
-                    delay = RETRY_DELAYS[attempt]
+                if attempt < AIConstants.MAX_RETRIES - 1:
+                    delay = AIConstants.RETRY_DELAYS[attempt]
                     logger.info(f"🔄 Retrying in {delay} seconds...")
                     await asyncio.sleep(delay)
                     
             except openai.InternalServerError as e:
                 logger.warning(f"🔧 Server error on attempt {attempt + 1}: {e}")
                 last_exception = e
-                if attempt < MAX_RETRIES - 1:
-                    delay = RETRY_DELAYS[attempt]
+                if attempt < AIConstants.MAX_RETRIES - 1:
+                    delay = AIConstants.RETRY_DELAYS[attempt]
                     logger.info(f"🔄 Retrying in {delay} seconds...")
                     await asyncio.sleep(delay)
                     
@@ -146,7 +142,7 @@ class OpenAIPaletteGenerator:
                 raise e
         
         # If all retries failed, raise the last exception
-        logger.error(f"❌ All {MAX_RETRIES} retry attempts failed")
+        logger.error(f"❌ All {AIConstants.MAX_RETRIES} retry attempts failed")
         raise last_exception or Exception("OpenAI API call failed after all retries")
     
     def _build_system_message(self, color_count: int) -> str:
