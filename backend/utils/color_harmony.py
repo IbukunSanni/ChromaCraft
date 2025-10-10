@@ -3,35 +3,10 @@ Color harmony algorithms for generating harmonious color palettes.
 Implements complementary, triadic, analogous, and other color theory rules.
 """
 
-import colorsys
 import random
 from typing import List, Tuple
 from math import cos, sin, pi
-
-
-def hex_to_hsl(hex_color: str) -> Tuple[float, float, float]:
-    """Convert HEX color to HSL values."""
-    hex_color = hex_color.lstrip("#")
-    r, g, b = tuple(int(hex_color[i : i + 2], 16) for i in (0, 2, 4))
-    r, g, b = r / 255.0, g / 255.0, b / 255.0
-    h, l, s = colorsys.rgb_to_hls(r, g, b)
-    return h, s, l
-
-
-def hsl_to_hex(h: float, s: float, l: float) -> str:
-    """Convert HSL values to HEX color."""
-    r, g, b = colorsys.hls_to_rgb(h, l, s)
-    r, g, b = int(r * 255), int(g * 255), int(b * 255)
-    return f"#{r:02x}{g:02x}{b:02x}"
-
-
-def normalize_hue(hue: float) -> float:
-    """Normalize hue to 0-1 range."""
-    while hue < 0:
-        hue += 1
-    while hue >= 1:
-        hue -= 1
-    return hue
+from utils.color_utils import hex_to_hsl, hsl_to_hex, normalize_hue
 
 
 def generate_complementary_palette(
