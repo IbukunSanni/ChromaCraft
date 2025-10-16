@@ -209,7 +209,7 @@ export function analyzePaletteContrast(colors: string[]): Array<{
   color1: string;
   color2: string;
   ratio: number;
-  wcagLevel: ColorInfo['accessibility']['wcagLevel'];
+  wcagLevel: NonNullable<ColorInfo['accessibility']>['wcagLevel'];
 }> {
   const results = [];
   

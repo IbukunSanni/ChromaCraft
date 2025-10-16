@@ -3,14 +3,14 @@
 import { useState, useEffect } from "react";
 import Layout from "@/components/Layout";
 import ImageUploader from "@/components/ImageUploader";
-import MoodInput from "@/components/MoodInput";
+import ConceptInput from "@/components/ConceptInput";
 import PaletteGenerator from "@/components/PaletteGenerator";
 import ConceptPaletteGenerator from "@/components/ConceptPaletteGenerator";
 import { ColorPalette } from "@/lib/types";
 import { API_BASE_URL } from "@/lib/constants";
 
 export default function Home() {
-  const [mood, setMood] = useState<string>("");
+  const [concept, setConcept] = useState<string>("");
   const [palette, setPalette] = useState<string[]>([]);
   const [colorNames, setColorNames] = useState<string[]>([]);
   const [newPalette, setNewPalette] = useState<string[]>([]);
@@ -18,18 +18,18 @@ export default function Home() {
   const [isAdjusting, setIsAdjusting] = useState(false);
   const [currentPalette, setCurrentPalette] = useState<ColorPalette | null>(null);
 
-  const handleAdjustMood = async () => {
-    if (!Array.isArray(palette) || palette.length === 0 || !mood) return;
+  const handleAdjustConcept = async () => {
+    if (!Array.isArray(palette) || palette.length === 0 || !concept) return;
 
     setIsAdjusting(true);
     const formData = new FormData();
-    formData.append("mood", mood);
+    formData.append("concept", concept);
     palette.forEach((color) => {
       formData.append("base_colors", color);
     });
 
     try {
-      const res = await fetch(`${API_BASE_URL}/adjust-mood`, {
+      const res = await fetch(`${API_BASE_URL}/adjust-concept`, {
         method: "POST",
         body: formData,
       });
@@ -38,7 +38,7 @@ export default function Home() {
       setNewPalette(data?.adjusted_colors || []);
       setNewColorNames(data?.names || []);
     } catch (err) {
-      console.error("Mood adjust failed:", err);
+      console.error("Concept adjust failed:", err);
     } finally {
       setIsAdjusting(false);
     }
@@ -149,16 +149,16 @@ export default function Home() {
         />
       )}
 
-      {/* Step 3: Mood Input */}
+      {/* Step 3: Concept Input */}
       {palette.length > 0 && (
-        <MoodInput onMoodChange={(m: string) => setMood(m)} />
+        <ConceptInput onConceptChange={(c: string) => setConcept(c)} />
       )}
 
       {/* Step 4: Adjust Button */}
-      {palette.length > 0 && mood && (
+      {palette.length > 0 && concept && (
         <div className="text-center">
           <button
-            onClick={handleAdjustMood}
+            onClick={handleAdjustConcept}
             disabled={isAdjusting}
             className="px-8 py-4 text-white font-bold text-lg rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             style={{ background: `linear-gradient(to right, var(--primary), var(--accent))` }}
@@ -183,7 +183,7 @@ export default function Home() {
           colors={newPalette}
           names={newColorNames}
           title="✨ AI-Adjusted Palette"
-          subtitle={`Transformed to feel "${mood}"`}
+          subtitle={`Transformed to match concept: "${concept}"`}
         />
       )}
 
@@ -194,7 +194,7 @@ export default function Home() {
             <div className="text-6xl">🚀</div>
             <h2 className="text-2xl font-bold" style={{ color: 'var(--foreground)' }}>Get Started</h2>
             <div className="space-y-2 max-w-2xl mx-auto" style={{ color: 'var(--secondary)' }}>
-              <p className="text-lg">Transform your images into mood-based color palettes with AI</p>
+              <p className="text-lg">Transform your images into concept-based color palettes with AI</p>
               <div className="grid md:grid-cols-3 gap-4 mt-6 text-sm">
                 <div className="space-y-2">
                   <div className="text-2xl">📸</div>
@@ -203,13 +203,13 @@ export default function Home() {
                 </div>
                 <div className="space-y-2">
                   <div className="text-2xl">🧠</div>
-                  <p className="font-medium">2. Describe Mood</p>
+                  <p className="font-medium">2. Describe Concept</p>
                   <p>Tell AI how you want the colors to feel</p>
                 </div>
                 <div className="space-y-2">
                   <div className="text-2xl">✨</div>
                   <p className="font-medium">3. Get Magic</p>
-                  <p>AI transforms colors to match your mood</p>
+                  <p>AI transforms colors to match your concept</p>
                 </div>
               </div>
             </div>

@@ -84,8 +84,9 @@ export default function ConceptPaletteGenerator({
       setLastGenerated(colorPalette);
       onPaletteGenerated?.(colorPalette);
 
-    } catch (err: any) {
-      setError(err?.message || "Failed to generate palette. Please try again.");
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Failed to generate palette. Please try again.";
+      setError(errorMessage);
       console.error("Concept generation error:", err);
     } finally {
       setIsGenerating(false);
@@ -115,7 +116,7 @@ export default function ConceptPaletteGenerator({
           ✨ Generated Palette
         </h3>
         <p className="text-sm" style={{ color: 'var(--secondary)' }}>
-          From concept: "{concept}"
+          From concept: &ldquo;{concept}&rdquo;
         </p>
       </div>
       
@@ -152,7 +153,7 @@ export default function ConceptPaletteGenerator({
           🤖 AI Concept Palette Generator
         </h2>
         <p style={{ color: 'var(--secondary)' }}>
-          Describe a concept, scene, or mood and let AI create a beautiful color palette
+          Describe a concept, scene, or idea and let AI create a beautiful color palette
         </p>
       </div>
 

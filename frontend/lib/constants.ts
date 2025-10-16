@@ -10,7 +10,6 @@ export const API_ENDPOINTS = {
   // Color generation endpoints
   GENERATE_RANDOM: '/generate/random',
   GENERATE_CONCEPT: '/generate/concept',
-  GENERATE_MOOD: '/generate/mood',
   EXTRACT_COLORS: '/extract-colors',
   
   // Palette editing endpoints
@@ -29,7 +28,7 @@ export const API_ENDPOINTS = {
   MEMORY_USAGE: '/mem',
   
   // Legacy endpoints (for backward compatibility)
-  ADJUST_MOOD: '/adjust-mood',
+  ADJUST_CONCEPT: '/adjust-concept',
 } as const;
 
 export const API_CONFIG = {
@@ -64,8 +63,8 @@ export const COLOR_HARMONY_TYPES = {
   SPLIT_COMPLEMENTARY: 'split-complementary',
 } as const;
 
-// Mood adjustment constants
-export const MOOD_COMMANDS = {
+// Concept adjustment constants
+export const CONCEPT_COMMANDS = {
   PASTEL: ['make it pastel', 'pastel', 'softer', 'lighter'],
   CONTRAST: ['add contrast', 'more contrast', 'increase contrast', 'bolder'],
   WARMER: ['make it warmer', 'warmer', 'warm tones', 'add warmth'],
@@ -139,7 +138,7 @@ export const ERROR_CATEGORIES = {
 
 // Feature flags (for gradual rollout)
 export const FEATURE_FLAGS = {
-  ENABLE_AI_MOOD_GENERATION: process.env.NEXT_PUBLIC_ENABLE_AI_MOOD === 'true',
+  ENABLE_AI_CONCEPT_GENERATION: process.env.NEXT_PUBLIC_ENABLE_AI_CONCEPT === 'true',
   ENABLE_ACCESSIBILITY_VALIDATION: process.env.NEXT_PUBLIC_ENABLE_A11Y === 'true',
   ENABLE_ASE_EXPORT: process.env.NEXT_PUBLIC_ENABLE_ASE === 'true',
   ENABLE_PALETTE_HISTORY: process.env.NEXT_PUBLIC_ENABLE_HISTORY === 'true',
@@ -159,6 +158,6 @@ export const DEFAULTS = {
   HARMONY_TYPE: COLOR_HARMONY_TYPES.COMPLEMENTARY,
   EXPORT_FORMAT: EXPORT_FORMATS.PNG,
   EXPORT_SIZE: 'medium' as keyof typeof EXPORT_SIZES,
-  MOOD_INTENSITY: 0.5,
+  CONCEPT_INTENSITY: 0.5,
   EDIT_INTENSITY: 0.5,
 } as const;

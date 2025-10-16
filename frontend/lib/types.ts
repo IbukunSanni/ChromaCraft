@@ -18,15 +18,16 @@ export interface ColorPalette {
   colors: string[];
   names: string[];
   metadata: {
-    generationMethod: 'random' | 'mood' | 'image' | 'edited' | 'concept';
+    generationMethod: 'random' | 'concept' | 'image' | 'edited';
     timestamp: string;
     source?: string;
   };
 }
 
 // API Request types
-export interface MoodGenerationRequest {
-  mood: string;
+export interface ConceptGenerationRequest {
+  concept: string;
+  color_count?: number;
   stylePreferences?: {
     saturation: 'low' | 'medium' | 'high';
     brightness: 'dark' | 'medium' | 'light';
@@ -45,10 +46,6 @@ export interface RandomGenerationRequest {
   harmonyType?: 'complementary' | 'triadic' | 'analogous' | 'monochromatic';
 }
 
-export interface ConceptGenerationRequest {
-  concept: string;
-  color_count?: number;
-}
 
 export interface ExportRequest {
   colors: string[];
@@ -74,12 +71,6 @@ export interface ColorExtractionResponse {
   };
 }
 
-export interface MoodGenerationResponse {
-  colors: string[];
-  names: string[];
-  confidence: number;
-  moodMatch: string;
-}
 
 export interface PaletteEditResponse {
   colors: string[];
@@ -102,7 +93,7 @@ export interface ConceptGenerationResponse {
   names: string[];
   harmony_info: {
     type: string;
-    mood: string;
+    concept: string;
     description: string;
     source: string;
     model: string;
@@ -124,7 +115,7 @@ export interface AccessibilityValidationResponse {
 export interface APIError {
   message: string;
   statusCode: number;
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
   timestamp: string;
 }
 
@@ -132,7 +123,7 @@ export interface APIError {
 export interface PaletteGeneratorState {
   currentPalette: ColorPalette | null;
   lockedColors: Set<number>;
-  generationMethod: 'random' | 'mood' | 'image' | 'edited';
+  generationMethod: 'random' | 'concept' | 'image' | 'edited';
   isLoading: boolean;
   error: string | null;
 }
@@ -162,13 +153,13 @@ export interface PaletteDisplayProps {
   showAccessibility?: boolean;
 }
 
-export interface MoodInputProps {
-  onMoodGenerate: (request: MoodGenerationRequest) => void;
+export interface ConceptInputProps {
+  onConceptGenerate: (request: ConceptGenerationRequest) => void;
   isLoading: boolean;
   error?: string | null;
 }
 
-export interface PromptEditorProps {
+export interface ConceptEditorProps {
   currentPalette: ColorPalette;
   onPaletteEdit: (request: PaletteEditRequest) => void;
   isLoading: boolean;

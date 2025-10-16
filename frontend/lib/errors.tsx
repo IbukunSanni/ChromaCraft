@@ -4,15 +4,14 @@
  */
 
 import React from 'react';
-import { APIError } from './types';
 
 // Custom error classes
 export class ChromaCraftError extends Error {
   public readonly statusCode: number;
-  public readonly details: Record<string, any>;
+  public readonly details: Record<string, unknown>;
   public readonly timestamp: string;
 
-  constructor(message: string, statusCode: number = 500, details: Record<string, any> = {}) {
+  constructor(message: string, statusCode: number = 500, details: Record<string, unknown> = {}) {
     super(message);
     this.name = 'ChromaCraftError';
     this.statusCode = statusCode;
@@ -22,21 +21,21 @@ export class ChromaCraftError extends Error {
 }
 
 export class ValidationError extends ChromaCraftError {
-  constructor(message: string, details: Record<string, any> = {}) {
+  constructor(message: string, details: Record<string, unknown> = {}) {
     super(message, 400, details);
     this.name = 'ValidationError';
   }
 }
 
 export class NetworkError extends ChromaCraftError {
-  constructor(message: string, details: Record<string, any> = {}) {
+  constructor(message: string, details: Record<string, unknown> = {}) {
     super(message, 0, details);
     this.name = 'NetworkError';
   }
 }
 
 export class FileProcessingError extends ChromaCraftError {
-  constructor(message: string, details: Record<string, any> = {}) {
+  constructor(message: string, details: Record<string, unknown> = {}) {
     super(message, 422, details);
     this.name = 'FileProcessingError';
   }
@@ -59,8 +58,8 @@ export const ERROR_MESSAGES = {
   INVALID_COLOR_FORMAT: 'Invalid color format. Please use valid HEX color codes.',
   PALETTE_GENERATION_FAILED: 'Failed to generate color palette. Please try again.',
   
-  // AI/Mood processing errors
-  MOOD_PROCESSING_FAILED: 'Unable to process mood description. Please try a different description.',
+  // AI/Concept processing errors
+  CONCEPT_PROCESSING_FAILED: 'Unable to process concept description. Please try a different description.',
   AI_SERVICE_UNAVAILABLE: 'AI service is temporarily unavailable. Please try again later.',
   
   // Export errors

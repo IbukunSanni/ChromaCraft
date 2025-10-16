@@ -12,7 +12,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 🎨 ChromaCraft
               </h1>
               <p className="text-lg font-medium" style={{ color: 'var(--secondary)' }}>
-                AI-Powered Color Palette Extraction & Mood Adjustment
+                AI-Powered Color Palette Extraction & Concept Adjustment
               </p>
             </div>
           </header>
@@ -26,7 +26,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <footer className="mt-16 text-center">
             <div className="glass rounded-xl p-6">
               <p className="text-sm" style={{ color: 'var(--secondary)' }}>
-                Built with ❤️ using AI • Extract colors, adjust moods, create magic
+                Built with ❤️ using AI • Extract colors, adjust concepts, create magic
               </p>
             </div>
           </footer>

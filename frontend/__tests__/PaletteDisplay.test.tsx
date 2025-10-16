@@ -250,21 +250,21 @@ describe('PaletteDisplay', () => {
   });
 
   it('handles different generation methods', () => {
-    const moodPalette = {
+    const conceptPalette = {
       ...mockPalette,
       metadata: {
         ...mockPalette.metadata,
-        generationMethod: 'mood' as const,
+        generationMethod: 'concept' as const,
       },
     };
     
     render(
       <PaletteDisplay 
         {...defaultProps} 
-        palette={moodPalette}
+        palette={conceptPalette}
       />
     );
     
-    expect(screen.getByText('Generated via mood • 5 colors')).toBeInTheDocument();
+    expect(screen.getByText('Generated via concept • 5 colors')).toBeInTheDocument();
   });
 });

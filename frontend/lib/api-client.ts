@@ -5,12 +5,10 @@
 
 import { 
   ColorExtractionResponse,
-  MoodGenerationResponse,
   PaletteEditResponse,
   RandomGenerationResponse,
   ConceptGenerationResponse,
   AccessibilityValidationResponse,
-  MoodGenerationRequest,
   PaletteEditRequest,
   RandomGenerationRequest,
   ConceptGenerationRequest,
@@ -70,7 +68,7 @@ class APIClient {
         const fetchResponse = await fetch(url, {
           method: config.method,
           headers,
-          body,
+          body: body as BodyInit,
           signal: controller.signal,
         });
 
@@ -138,12 +136,6 @@ class APIClient {
     });
   }
 
-  // Mood-based palette generation
-  async generateMoodPalette(request: MoodGenerationRequest): Promise<MoodGenerationResponse> {
-    return this.post<MoodGenerationResponse>(API_ENDPOINTS.GENERATE_MOOD, request, {
-      timeout: API_CONFIG.AI_TIMEOUT,
-    });
-  }
 
   // Palette editing with natural language
   async editPalette(request: PaletteEditRequest): Promise<PaletteEditResponse> {
@@ -234,7 +226,7 @@ export function validateImageFile(file: File): void {
     throw new ChromaCraftError(`File size (${(file.size / 1024 / 1024).toFixed(1)}MB) exceeds the ${maxSize / 1024 / 1024}MB limit.`);
   }
 
-  if (!allowedTypes.includes(file.type as string)) {
+  if (!allowedTypes.includes(file.type as 'image/jpeg' | 'image/jpg' | 'image/png')) {
     throw new ChromaCraftError(`File type "${file.type}" is not supported. Please use JPG or PNG files.`);
   }
 }

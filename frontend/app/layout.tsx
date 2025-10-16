@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "ChromaCraft - AI Color Palette Generator",
-  description: "Extract and adjust color palettes from images using AI. Transform colors based on mood with our intelligent color palette tool.",
+  description: "Extract and adjust color palettes from images using AI. Transform colors based on concepts with our intelligent color palette tool.",
 };
 
 export default function RootLayout({
