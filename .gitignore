@@ -1,0 +1,207 @@
+# ==========================================
+# CHROMACRAFT - CLEAN GITIGNORE
+# ==========================================
+
+# ==========================================
+# ENVIRONMENT & SECRETS
+# ==========================================
+.env
+.env.*
+!.env.example
+!.env.template
+*api_key*
+*secret_key*
+*access_token*
+*private_key*
+secrets.*
+credentials.json
+config/secrets/
+
+# ==========================================
+# DEPENDENCIES & PACKAGES
+# ==========================================
+node_modules/
+.pnpm-store/
+.npm/
+.yarn-cache/
+venv/
+.venv/
+ENV/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# ==========================================
+# BUILD & DISTRIBUTION
+# ==========================================
+build/
+dist/
+out/
+.next/
+*.tsbuildinfo
+*.egg-info/
+wheels/
+*.egg
+
+# ==========================================
+# CACHE & TEMPORARY
+# ==========================================
+.cache/
+*.log
+*.tmp
+*.backup
+*.bak
+*~
+.pytest_cache/
+.coverage
+.nyc_output
+.turbo/
+
+# ==========================================
+# AI/ML SPECIFIC
+# ==========================================
+# Model files
+*.pkl
+*.h5
+*.pt
+*.pth
+*.safetensors
+*.onnx
+models/
+checkpoints/
+model_weights/
+
+# AI caches
+.cache/huggingface/
+.cache/transformers/
+openai_cache/
+llm_cache/
+embeddings_cache/
+
+# Training data
+data/raw/
+data/processed/
+datasets/
+training_data/
+*.jsonl
+*.parquet
+
+# Experiment tracking
+mlruns/
+wandb/
+.neptune/
+tensorboard_logs/
+experiments/
+
+# ==========================================
+# DEPLOYMENT
+# ==========================================
+# Docker
+Dockerfile.*
+!Dockerfile
+!Dockerfile.example
+docker-compose.override.yml
+docker-compose.*.yml
+!docker-compose.yml
+
+# Cloud platforms
+.vercel
+.netlify/
+.serverless/
+
+# Infrastructure as Code
+*.tfstate*
+*.tfvars
+!*.tfvars.example
+.terraform/
+Pulumi.*.yaml
+!Pulumi.yaml
+
+# ==========================================
+# DEVELOPMENT TOOLS
+# ==========================================
+# Editors & IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-*
+.pre-commit-config.yaml
+
+# Package managers (keep pnpm-lock)
+Poetry.lock
+Pipfile.lock
+yarn.lock
+package-lock.json
+!pnpm-lock.yaml
+
+# Testing & Quality
+coverage/
+htmlcov/
+.eslintcache
+.stylelintcache
+.mypy_cache/
+
+# ==========================================
+# PLATFORM SPECIFIC
+# ==========================================
+# Windows
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+
+# Linux
+.fuse_hidden*
+.directory
+.Trash-*
+
+# ==========================================
+# PROJECT SPECIFIC
+# ==========================================
+# ChromaCraft files
+color_models/
+palette_cache/
+generated_palettes/
+user_uploads/
+static/generated/
+test_images/
+sample_data/
+
+# Database files
+*.db
+*.sqlite*
+
+# Uploads
+uploads/
+
+# Performance & monitoring
+*.prof
+profile_*
+*.perf
+
+# ==========================================
+# SECURITY - NEVER COMMIT
+# ==========================================
+*.pem
+*.key
+*.crt
+*.cert
+*.p12
+id_rsa
+id_dsa
+known_hosts
+service-account-*.json
+
+# ==========================================
+# MISC
+# ==========================================
+.kiro/
+tmp/
+temp/

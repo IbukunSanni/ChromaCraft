@@ -1,8 +1,45 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* ChromaCraft Color Palette */
+  --charcoal: #4a4a4a;
+  --blue-gray: #6b7a8f;
+  --steel-blue: #7d9bb8;
+  --light-blue: #a8c5e3;
+  --pale-blue: #c8d5e8;
+  --white: #ffffff;
+  
+  /* Light Mode */
+  --background: linear-gradient(135deg, var(--pale-blue) 0%, var(--white) 100%);
+  --foreground: var(--charcoal);
+  --primary: var(--steel-blue);
+  --secondary: var(--blue-gray);
+  --accent: var(--light-blue);
+  --muted: var(--pale-blue);
+  --card-bg: linear-gradient(145deg, rgba(255,255,255,0.9) 0%, rgba(200,213,232,0.3) 100%);
+  --glass-bg: rgba(255, 255, 255, 0.25);
+  --glass-border: rgba(255, 255, 255, 0.18);
+}
+
+[data-theme="dark"] {
+  /* Dark Mode Colors */
+  --charcoal-dark: #1a1a1a;
+  --blue-gray-dark: #2a3441;
+  --steel-blue-dark: #3d5a75;
+  --light-blue-dark: #4a6b8a;
+  --pale-blue-dark: #2d3748;
+  --white-dark: #f7fafc;
+  
+  /* Dark Mode Semantic Colors */
+  --background: linear-gradient(135deg, var(--charcoal-dark) 0%, var(--blue-gray-dark) 100%);
+  --foreground: var(--white-dark);
+  --primary: var(--light-blue-dark);
+  --secondary: var(--steel-blue-dark);
+  --accent: var(--pale-blue-dark);
+  --muted: var(--blue-gray-dark);
+  --card-bg: linear-gradient(145deg, rgba(42,52,65,0.9) 0%, rgba(26,26,26,0.8) 100%);
+  --glass-bg: rgba(42, 52, 65, 0.25);
+  --glass-border: rgba(77, 107, 138, 0.18);
 }
 
 @theme inline {
@@ -10,17 +47,50 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  
+  /* Custom color classes */
+  --color-charcoal: var(--charcoal);
+  --color-blue-gray: var(--blue-gray);
+  --color-steel-blue: var(--steel-blue);
+  --color-light-blue: var(--light-blue);
+  --color-pale-blue: var(--pale-blue);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  min-height: 100vh;
+}
+
+/* Custom gradient backgrounds */
+.gradient-bg {
+  background: var(--background);
+}
+
+.card-gradient {
+  background: var(--card-bg);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+}
+
+/* Glassmorphism effect */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+}
+
+/* Color palette display animations */
+.color-swatch {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.color-swatch:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(74, 74, 74, 0.15);
+}
+
+[data-theme="dark"] .color-swatch:hover {
+  box-shadow: 0 8px 25px rgba(77, 107, 138, 0.3);
 }

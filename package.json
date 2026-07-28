@@ -1,0 +1,53 @@
+{
+  "name": "chromacraft",
+  "version": "1.0.0",
+  "description": "AI-Powered Color Palette Extraction & Concept-based Generation",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently --names \"BACKEND,FRONTEND\" --prefix-colors \"magenta,blue\" \"pnpm run dev:backend\" \"pnpm run dev:frontend\"",
+    "dev:frontend": "cd frontend && pnpm run dev",
+    "dev:backend": "cd backend && python run_dev.py",
+    "build": "pnpm run build:frontend",
+    "build:frontend": "cd frontend && pnpm run build",
+    "start": "concurrently --names \"BACKEND,FRONTEND\" \"pnpm run start:backend\" \"pnpm run start:frontend\"",
+    "start:frontend": "cd frontend && pnpm run start",
+    "start:backend": "cd backend && python -m uvicorn main:app --host 0.0.0.0 --port 8000",
+    "setup": "pnpm run setup:frontend && pnpm run setup:backend",
+    "setup:frontend": "cd frontend && pnpm install",
+    "setup:backend": "cd backend && python -m venv venv && ./venv/Scripts/activate && pip install -r requirements.txt",
+    "clean": "pnpm run clean:frontend && pnpm run clean:backend && pnpm run clean:root",
+    "clean:frontend": "cd frontend && rm -rf .next node_modules dist",
+    "clean:backend": "cd backend && rm -rf __pycache__ .pytest_cache venv",
+    "clean:root": "rm -rf node_modules",
+    "test": "concurrently \"pnpm run test:frontend\" \"pnpm run test:backend\"",
+    "test:frontend": "cd frontend && pnpm run test",
+    "test:backend": "cd backend && python -m pytest",
+    "lint": "concurrently \"pnpm run lint:frontend\" \"pnpm run lint:backend\"",
+    "lint:frontend": "cd frontend && pnpm run lint",
+    "lint:backend": "cd backend && python -m flake8 . || echo 'No flake8 config found'"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "workspaces": [
+    "frontend"
+  ],
+  "keywords": [
+    "ai",
+    "color-palette",
+    "openai",
+    "color-generation",
+    "concept-based",
+    "nextjs",
+    "fastapi"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/IbukunSanni/ChromaCraft.git"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  }
+}
