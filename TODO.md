@@ -1,203 +1,238 @@
-# 🎯 ChromaCraft TODO
+# ChromaCraft Product Roadmap
 
-*Features roadmap - Updated October 2025*
+> Current focus: turn palette generation into a reliable, persistent color-system workspace.
+>
+> Last reviewed: July 28, 2026
 
----
+## Product value
 
-## ✅ **COMPLETED FEATURES**
+ChromaCraft helps a user turn visual or verbal inspiration into an editable, reusable, implementation-ready color system.
 
-### **🤖 AI Concept Generation (DONE)**
-- [x] **OpenAI GPT-4o-mini integration** for concept-to-palette generation
-- [x] **Concept terminology** (replaced "prompt/mood" throughout codebase)
-- [x] **200 character limit validation** on frontend and backend
-- [x] **Retry logic with exponential backoff** (1s, 2s, 4s, 8s delays)
-- [x] **Original concept return** in API responses and metadata
-- [x] **Robust error handling** with fallback color extraction
-- [x] **Comprehensive logging** for debugging and monitoring
+The core workflow is:
 
-### **🏗️ Project Infrastructure (DONE)**
-- [x] **Clean project structure** with organized directories
-- [x] **Optimized package.json** with comprehensive scripts
-- [x] **Professional README.md** with setup instructions
-- [x] **Environment configuration** (.env.example template)
-- [x] **Gitignore optimization** with AI/ML and security patterns
-- [x] **Development workflow** (pnpm workspace, concurrent dev servers)
-- [x] **File organization** (moved color_names.json to backend/utils/)
+```text
+Image or concept
+    → generate a palette
+    → edit, lock, and regenerate
+    → assign practical color roles
+    → check contrast
+    → save and revisit versions
+    → export usable design tokens
+```
 
-### **🎨 Core Palette Features (DONE)**
-- [x] **Image-based color extraction** using ColorThief
-- [x] **Concept-based AI generation** with natural language input
-- [x] **Mood-based transformations** using sentence transformers
-- [x] **PNG export functionality** for palette swatches
-- [x] **Color naming system** using XKCD color database
-- [x] **Interactive palette display** with click-to-copy
+Generation attracts a user; continuity, validation, and useful exports make the product worth returning to.
 
----
+## Definition of Done: useful v1
 
-## 🚀 **ACTIVE DEVELOPMENT**
+ChromaCraft v1 is done only when a user can complete the following journey reliably:
 
-### 1. 🎛️ Interactive Palette Editor (IN PROGRESS)
-- [ ] **Individual color editing** with color picker
-- [ ] **Drag & drop reordering** of palette colors
-- [ ] **Lock/unlock colors** during regeneration
-- [ ] **Undo/Redo functionality** for edit history
-- [ ] **Real-time preview** of changes
+1. Create a palette from an image, a written concept, or a color-harmony generator.
+2. Edit any color, reorder colors, and lock colors during regeneration.
+3. Assign practical roles such as primary, secondary, accent, surface, and text.
+4. See clear WCAG contrast results for relevant text/background combinations.
+5. Undo and redo edits without losing work.
+6. Name and save a palette locally without creating an account.
+7. Reload the application and recover the last workspace and saved palettes.
+8. Open, rename, duplicate, archive, and delete a saved palette.
+9. See and restore earlier versions of a palette.
+10. Export the result as PNG, JSON design tokens, and CSS variables.
+11. Import a previously exported ChromaCraft JSON file.
+12. Complete the core journey on desktop and mobile using keyboard, mouse, or touch.
 
-### 2. 📥 Enhanced Export System
-- [x] **PNG export** (basic implementation)
-- [ ] **Multiple export formats** (ASE, GPL, JSON, CSS, SVG)
-- [ ] **Custom export sizes** and layouts
-- [ ] **Batch export capabilities**
-- [ ] **Export with metadata** (concept, generation method)
+The release also must meet these quality gates:
 
-### 3. 🔄 AI-Assisted Editing (NEXT UP)
-- [ ] **Concept-based single color adjustments**
-  - "Make the blue more teal"
-  - "Brighten the accent color"
-  - "Shift this towards sunset tones"
-- [ ] **Smart color suggestions** while editing
-- [ ] **Harmony validation** with visual warnings
-- [ ] **Auto-complete color relationships**
-- [ ] **Batch transformations** (apply mood to entire palette)
+- [ ] A fresh clone can be set up using the documented commands.
+- [ ] Frontend and backend start together without import or configuration errors.
+- [ ] Frontend API declarations match implemented backend endpoints.
+- [ ] Core frontend and backend tests pass in a clean environment.
+- [ ] Invalid images, unavailable AI, timeouts, and malformed input produce useful errors without destroying existing work.
+- [ ] Autosave visibly reports `Saving`, `Saved locally`, or `Save failed`.
+- [ ] Stored data has a versioned schema and a tested migration path.
+- [ ] No OpenAI key or other secret is exposed to the browser or committed to Git.
+- [ ] Uploaded images have documented size/type limits and are not retained without the user's knowledge.
+- [ ] The core workflow has no known data-loss or keyboard-blocking defects.
 
----
+Items outside this Definition of Done are deferred unless they directly unblock it.
 
-## 🔮 **UPCOMING FEATURES**
+## Current reality
 
-### 4. 📊 Performance & Optimization
-- [ ] **Rate limiting system** for OpenAI API calls
-- [ ] **Intelligent caching** for repeated concepts and images
-- [ ] **Image compression** and optimization
-- [ ] **Response time optimization** (<2s for most operations)
-- [ ] **Memory usage monitoring** and cleanup
+### Implemented
 
-### 5. 🌍 User Experience Enhancements
-- [ ] **Mobile-responsive design** and touch optimization
-- [ ] **Dark/Light theme toggle** with system preference detection
-- [ ] **Accessibility improvements** (color-blind friendly, keyboard navigation)
-- [ ] **Keyboard shortcuts** for power users
-- [ ] **Tutorial/Onboarding flow** for new users
-- [ ] **Loading states** and progress indicators
+- [x] Image-based dominant-color extraction
+- [x] AI concept-to-palette generation
+- [x] Concept-based transformation of an extracted palette
+- [x] Random and harmony-based palette generation
+- [x] Color naming using the XKCD color dataset
+- [x] Click-to-copy color values
+- [x] Lock/unlock colors during regeneration
+- [x] Basic keyboard interaction for palette swatches
+- [x] Light/dark theme support
+- [x] Basic PNG generation
+- [x] FastAPI route/service/utility separation
+- [x] Centralized frontend API client
 
-### 6. 🔗 Integration & Sharing
-- [ ] **Social sharing** (Twitter, Pinterest ready formats)
-- [ ] **URL-based palette sharing** with unique links
-- [ ] **Embed codes** for websites and blogs
-- [ ] **Design tool plugins** (Figma, Adobe Creative Suite)
-- [ ] **Developer API** with authentication
-- [ ] **Batch processing** for multiple concepts/images
+### Known gaps and inconsistencies
 
-### 7. 💾 Data & Analytics
-- [ ] **User palette history** and favorites
-- [ ] **Popular palettes showcase** and trending
-- [ ] **Usage analytics** (most requested concepts, color preferences)
-- [ ] **Performance monitoring** and error tracking
-- [ ] **A/B testing framework** for UI improvements
+- [ ] Restore the missing backend request/response models imported by the routes.
+- [ ] Ensure all backend dependencies, including OpenAI, install from `requirements.txt`.
+- [ ] Make the documented setup commands work on supported Windows shells.
+- [ ] Reconcile frontend-only API declarations with real backend endpoints.
+- [ ] Verify the PNG request format agrees between frontend and backend.
+- [ ] Remove or update stale README/TODO claims.
+- [ ] Resolve text/emoji encoding corruption where it appears.
+- [ ] Remove or properly ignore temporary development files.
 
----
+## Execution plan
 
-## 🔬 **LONG-TERM VISION**
+Work in order. Do not begin a later phase while an earlier phase has release-blocking failures.
 
-### 8. 🤖 Custom ChromaCraft AI Model
-- [ ] **Data collection pipeline** for training data
-  - Curate high-quality image-palette datasets
-  - Collect concept-palette pairs from user interactions
-  - Build comprehensive mood-color association database
-- [ ] **Model architecture research** and development
-  - Vision transformers for advanced image analysis
-  - Custom text encoders for concept understanding
-  - Color space optimization algorithms
-- [ ] **Training infrastructure** setup and management
-- [ ] **Model evaluation metrics** and benchmarking
-- [ ] **A/B testing** (Custom model vs OpenAI performance)
-- [ ] **Deployment pipeline** with fallback systems
+### Phase 0 — Establish a reliable baseline
 
-### 9. 🌍 Platform Expansion
-- [ ] **Mobile applications** (iOS, Android)
-- [ ] **Desktop applications** (Windows, macOS, Linux)
-- [ ] **Browser extensions** for quick palette capture
-- [ ] **CLI tools** for developers and designers
-- [ ] **Enterprise features** and team collaboration
+Goal: a contributor can run and test the existing application before new product work begins.
 
----
+- [ ] Add or restore backend Pydantic request/response models.
+- [ ] Install from a clean environment and correct dependency declarations.
+- [ ] Start frontend and backend together and exercise every implemented endpoint.
+- [ ] Align API paths, payload names, response types, and error shapes.
+- [ ] Remove client methods for endpoints that are not part of the current scope, or implement the required endpoints.
+- [ ] Make lint, frontend tests, backend tests, and frontend production build pass.
+- [ ] Update README setup, environment, and feature documentation from verified behavior.
 
-## 🏁 **CURRENT SPRINT PRIORITIES**
+**Phase 0 exit criteria:** documented setup succeeds, both applications start, production frontend build passes, and the test suites run without collection or import errors.
 
-### **This Week (Priority 1)**
-1. 🏛️ **Interactive Palette Editor** - Start development
-2. 📥 **Enhanced Export Formats** - JSON and CSS support
-3. 📱 **Mobile Responsiveness** - Touch-friendly interface
+### Phase 1 — Canonical palette model and local persistence
 
-### **Next 2 Weeks (Priority 2)**
-4. 🔄 **AI-Assisted Editing** - Single color concept adjustments
-5. 📊 **Performance Optimization** - Caching and rate limiting
-6. 🌍 **UX Improvements** - Loading states and error handling
+Goal: users never lose useful work during ordinary browser use.
 
-### **This Month (Priority 3)**
-7. 🎨 **Theme System** - Dark/Light mode toggle
-8. ♿ **Accessibility** - Screen reader support, keyboard navigation
-9. 💾 **Data Persistence** - Save user preferences and history
+- [ ] Define one canonical, versioned palette model shared conceptually by frontend and backend.
+- [ ] Give palettes and individual colors stable IDs.
+- [ ] Store color value, name, role, lock state, order, source, concept, timestamps, and generation metadata.
+- [ ] Introduce a `PaletteRepository` interface so storage is replaceable.
+- [ ] Implement a local repository using IndexedDB; use `localStorage` only for small preferences.
+- [ ] Autosave after meaningful changes using a short debounce.
+- [ ] Restore the last workspace on reload.
+- [ ] Add save-state feedback: `Saving`, `Saved locally`, and `Save failed`.
+- [ ] Add schema versioning and migrations.
+- [ ] Add JSON backup export and import.
+- [ ] Test reload recovery, failed writes, corrupt records, migrations, and import validation.
 
-### **Next Quarter**
-10. 🔗 **Sharing Features** - Social media integration
-11. 📊 **Analytics Dashboard** - Usage insights for users
-12. 🤖 **Advanced AI Features** - Multi-concept generation
+**Phase 1 exit criteria:** a user can close/reload the browser and recover their palette, metadata, locks, roles, and edit state without manual action.
 
----
+### Phase 2 — Complete the palette workspace
 
-## 🛡️ **TECHNICAL CONSIDERATIONS**
+Goal: generated colors can be refined into a practical color system.
 
-### **💪 Performance**
-- **Image optimization** - Compression and resizing for faster processing
-- **API response times** - Target <2s for concept generation
-- **Caching strategy** - Redis for frequently requested concepts
-- **Memory management** - Cleanup after processing large images
-- **Bundle optimization** - Code splitting and lazy loading
+- [ ] Edit an individual color using a color picker and HEX input.
+- [ ] Validate and normalize manual color input.
+- [ ] Reorder colors with mouse, keyboard, and touch controls.
+- [ ] Implement bounded undo/redo history.
+- [ ] Assign semantic roles: primary, secondary, accent, surface, background, text, success, warning, and danger.
+- [ ] Display WCAG contrast ratios and AA/AAA results for selected foreground/background pairs.
+- [ ] Suggest accessible alternatives without silently changing the palette.
+- [ ] Preserve roles and locked colors when regenerating where possible.
+- [ ] Provide a responsive live preview using the assigned roles.
 
-### **🔒 Security**
-- **File upload validation** - Type and size restrictions
-- **API key protection** - Environment variables and rotation
-- **Rate limiting** - Prevent abuse and manage costs
-- **Input sanitization** - XSS protection and concept validation
-- **HTTPS enforcement** - Secure data transmission
+**Phase 2 exit criteria:** a user can deliberately refine a generated palette, understand its accessibility, and undo mistakes.
 
-### **💰 Cost Management**
-- **OpenAI API usage** - Monitor and set monthly limits
-- **Caching implementation** - Reduce redundant API calls
-- **Usage analytics** - Track cost per user/feature
-- **Fallback systems** - Graceful degradation when limits reached
+### Phase 3 — Palette library and versions
 
-### **📈 Monitoring**
-- **Error tracking** - Comprehensive logging and alerts
-- **Performance metrics** - Response times and success rates
-- **User analytics** - Feature usage and engagement
-- **Health checks** - Automated service monitoring
+Goal: ChromaCraft becomes a workspace users can return to.
 
----
+- [ ] Add a `My Palettes` library.
+- [ ] Name, search, sort, open, rename, duplicate, archive, and delete palettes.
+- [ ] Confirm destructive deletion and clearly distinguish it from archive.
+- [ ] Create version snapshots for generation and significant edits.
+- [ ] View, compare, and restore earlier versions.
+- [ ] Protect against accidental overwrite when two tabs edit the same palette.
+- [ ] Provide a clear empty state and a short first-use explanation.
 
-## 📝 **PROJECT STATUS**
+**Phase 3 exit criteria:** a user can manage several projects and safely explore alternatives without losing an earlier result.
 
-### **✅ Completed (Q4 2024)**
-- ✅ **Core AI Integration** - OpenAI concept generation with retry logic
-- ✅ **Project Infrastructure** - Clean architecture and development workflow
-- ✅ **Basic Features** - Image extraction, mood adjustment, PNG export
-- ✅ **Code Quality** - Comprehensive error handling and logging
+### Phase 4 — Implementation-ready exports
 
-### **🔄 In Progress (Q1 2025)**
-- 🔄 **Interactive Editor** - Color picker and palette editing
-- 🔄 **Export System** - Multiple formats and custom layouts
-- 🔄 **UX Polish** - Mobile responsiveness and loading states
+Goal: users can take the palette directly into real design or development work.
 
-### **🎯 Next Milestones**
-- **v1.1** - Interactive editor and enhanced exports
-- **v1.2** - Performance optimization and caching
-- **v1.3** - Theme system and accessibility
-- **v2.0** - Custom AI model and advanced features
+- [ ] Keep PNG export working and include palette name and optional metadata.
+- [ ] Export canonical ChromaCraft JSON.
+- [ ] Export CSS custom properties using semantic role names.
+- [ ] Export a Tailwind-compatible color object.
+- [ ] Preview and copy export text before download.
+- [ ] Sanitize generated token names and handle duplicate roles/names.
+- [ ] Add round-trip tests for ChromaCraft JSON import/export.
 
----
+**Phase 4 exit criteria:** the exported CSS and JSON are valid, deterministic, accessible from mobile, and usable without manual cleanup.
 
-**Last Updated: October 9, 2025**  
-**Next Review: Weekly during active development**  
-**Current Phase: Interactive Editor Development**
+### Phase 5 — Product hardening
 
-*For detailed project structure, see [README.md](./README.md)*
+Goal: the useful v1 workflow is trustworthy outside the developer's machine.
+
+- [ ] Add clear loading, empty, offline, timeout, and retry states.
+- [ ] Ensure AI failure leaves current and saved palettes intact.
+- [ ] Validate upload MIME type, decoded image content, dimensions, and file size.
+- [ ] Add rate limiting and cost controls for AI endpoints.
+- [ ] Add caching only after measuring repeated requests and defining privacy behavior.
+- [ ] Audit keyboard navigation, focus visibility, labels, reduced motion, and touch targets.
+- [ ] Test the complete Definition of Done journey on common desktop and mobile viewport sizes.
+- [ ] Add privacy copy explaining local storage and image handling.
+- [ ] Add error monitoring without recording concepts or image data by default.
+
+**Phase 5 exit criteria:** all Definition of Done items and quality gates are verified in a production-like environment.
+
+## Persistence after useful v1
+
+Cloud persistence is the next milestone, not a prerequisite for validating the local-first product.
+
+When users need cross-device access:
+
+- [ ] Add PostgreSQL-backed users, palettes, palette versions, and optional source-image records.
+- [ ] Add managed authentication rather than implementing password storage.
+- [ ] Keep anonymous local use available.
+- [ ] Offer an explicit local-to-cloud import after sign-in.
+- [ ] Create a new version on sync conflict instead of silently overwriting.
+- [ ] Add read-only share links with revocation.
+- [ ] Define account export and deletion behavior before launch.
+
+Suggested backend resources:
+
+```text
+users
+palettes
+palette_versions
+source_images (optional, explicit retention only)
+```
+
+Palette version snapshots may use JSON initially. Normalize color records only when real query requirements justify the added complexity.
+
+## Deferred until after useful v1
+
+These ideas may be valuable later but currently dilute the core outcome:
+
+- Custom AI model training
+- Social feeds, trending palettes, and public showcases
+- Native mobile and desktop applications
+- Browser extensions
+- Figma or Adobe plugins
+- Team and enterprise collaboration
+- Batch processing
+- Embed codes
+- Advanced analytics and A/B testing
+- ASE, GPL, and other specialist formats
+- Redis or complex infrastructure without measured need
+
+## Working rules
+
+- Prefer finishing the end-to-end user journey over adding another generator.
+- Fix mismatches and broken foundations before building on them.
+- Every feature must include failure, empty, loading, and recovery behavior.
+- Persist user intent—roles, locks, order, concept, and history—not just HEX values.
+- Do not mark an item complete because code exists; verify its user-visible acceptance criteria.
+- Keep pull requests aligned to one phase outcome where practical.
+- Review this roadmap after completing each phase, not on arbitrary calendar dates.
+
+## Immediate next actions
+
+1. Complete Phase 0 and record exact verification commands in the README.
+2. Define the canonical `SavedPalette` schema and repository interface.
+3. Implement local autosave and reload recovery.
+4. Add the palette library before cloud accounts.
+5. Continue through the phases until every useful v1 Definition of Done item is verified.
