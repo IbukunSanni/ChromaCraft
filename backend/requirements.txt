@@ -1,3 +1,8 @@
+# Install the CPU-only PyTorch build. The default PyPI wheel on Linux pulls in
+# several GB of NVIDIA/CUDA libraries that ChromaCraft never uses, which makes
+# Railway builds slow and images huge. torch==2.7.0 resolves to 2.7.0+cpu here.
+--extra-index-url https://download.pytorch.org/whl/cpu
+
 # Core FastAPI dependencies
 fastapi==0.115.12
 uvicorn==0.34.2

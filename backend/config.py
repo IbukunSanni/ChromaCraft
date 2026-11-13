@@ -19,17 +19,19 @@ class Config:
         for origin in os.getenv(
             "ALLOWED_ORIGINS",
             "http://localhost:3000,"
-            "http://127.0.0.1:3000,"
-            "https://color-palette-extractor.vercel.app",
+            "http://127.0.0.1:3000",
         ).split(",")
         if origin.strip()
     ]
-    # Regex for additional origins, e.g. Vercel preview deployments such as
-    # https://color-palette-extractor-<hash>-<team>.vercel.app.
+    # Regex for the deployed frontend: the "chromacraft" Vercel project's
+    # production domain (chromacraft-<name>.vercel.app) and its preview
+    # deployments (chromacraft-<hash>-<team>.vercel.app,
+    # chromacraft-git-<branch>-<team>.vercel.app). The bare
+    # chromacraft.vercel.app belongs to another project and is not matched.
     # Wildcards inside ALLOWED_ORIGINS are not supported by CORSMiddleware.
     ALLOWED_ORIGIN_REGEX = os.getenv(
         "ALLOWED_ORIGIN_REGEX",
-        r"https://color-palette-extractor(-[a-z0-9-]+)?\.vercel\.app",
+        r"https://chromacraft-[a-z0-9-]+\.vercel\.app",
     ) or None
     
     @classmethod

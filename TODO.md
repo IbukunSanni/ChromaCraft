@@ -151,7 +151,10 @@ Phase order changed on November 13, 2026: the browser-only tools (Phase 1) now c
 Goal: a contributor can run, test, and deploy the existing application before new product work begins.
 
 - [x] Add or restore backend Pydantic request/response models.
-- [ ] Merge PR #8 into `main`. Then confirm the Railway settings (root directory `backend`, `OPENAI_API_KEY`, public domain) and Vercel's `NEXT_PUBLIC_API_URL`, and check that production `/` responds.
+- [x] Merge PR #8 into `main` (November 13, 2026).
+- [ ] Name every hosted resource `chromacraft`: the Vercel project, the Railway project and service, and the Railway domain `chromacraft-production.up.railway.app`.
+- [ ] Railway: set the config-as-code path to `/backend/railway.json`, remove any manual `PORT` variable, set `OPENAI_API_KEY`, and check that `/` responds (it currently returns 502).
+- [ ] Vercel: set `NEXT_PUBLIC_API_URL` to the Railway domain for Production and Preview, redeploy, and confirm that palette generation works on the production site.
 - [ ] Add GitHub Actions CI: backend `pytest`, plus frontend lint, tests, and production build, on pull requests to `dev` and `main`.
 - [ ] Turn on Dependabot security updates. The vulnerable Next.js release blocked production deploys for months.
 - [ ] Install from a clean environment and correct dependency declarations.
@@ -163,7 +166,8 @@ Goal: a contributor can run, test, and deploy the existing application before ne
 - [x] Remove client methods for endpoints that are not part of the current scope, or implement the required endpoints.
 - [x] Make lint, frontend tests, backend tests, and frontend production build pass.
 - [ ] Fix `pnpm run setup:backend` on Windows, and use one virtual-environment folder name (`backend/venv` or `backend/.venv`) everywhere.
-- [ ] Remove the unused `backend/render.yaml`, and archive `.kiro/specs` so this file is the single plan.
+- [x] Remove the unused `backend/render.yaml`; Railway is the only backend host.
+- [ ] Archive `.kiro/specs` so this file is the single plan.
 - [ ] Update README setup, environment, and feature documentation from verified behavior.
 
 **Phase 0 exit criteria:** documented setup succeeds, CI passes, both applications start, and production serves the current `main`.
@@ -342,7 +346,7 @@ These ideas may be valuable later but currently dilute the core outcome:
 
 ## Immediate next actions
 
-1. Merge PR #8, finish the Railway and Vercel settings, and confirm production responds.
+1. Finish the `chromacraft` renames and the Railway and Vercel settings, and confirm production responds.
 2. Add CI and Dependabot so `main` cannot silently break again.
 3. Build the one-workspace palette model (Phase 1, first two items).
 4. Ship the Phase 1 tools in this order: 2–10 colors, contrast matrix, shades and tints, share link, color-blindness simulation, copy-as-code.

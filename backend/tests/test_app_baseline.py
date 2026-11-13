@@ -54,8 +54,9 @@ class TestCors:
         "origin",
         [
             "http://localhost:3000",
-            "https://color-palette-extractor.vercel.app",
-            "https://color-palette-extractor-74qrycbse-ibukunsanni-projects.vercel.app",
+            "https://chromacraft-app.vercel.app",
+            "https://chromacraft-74qrycbse-ibukunsanni-projects.vercel.app",
+            "https://chromacraft-git-dev-ibukunsanni-projects.vercel.app",
         ],
     )
     def test_allowed_origins(self, origin):
@@ -71,7 +72,12 @@ class TestCors:
 
     @pytest.mark.parametrize(
         "origin",
-        ["https://evil.vercel.app", "https://color-palette-extractor.vercel.app.evil.com"],
+        [
+            "https://evil.vercel.app",
+            "https://chromacraft.vercel.app",
+            "https://chromacraft-app.vercel.app.evil.com",
+            "https://color-palette-extractor.vercel.app",
+        ],
     )
     def test_rejected_origins(self, origin):
         response = client.options(
