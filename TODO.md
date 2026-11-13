@@ -11,7 +11,7 @@ ChromaCraft helps a user turn visual or verbal inspiration into an editable, acc
 The core workflow is:
 
 ```text
-Image, concept, or harmony rule
+Image, concept, harmony rule, or color wheel
     → generate a palette of 2–10 colors
     → edit, lock, vary, and regenerate
     → assign practical color roles
@@ -27,7 +27,7 @@ Generation attracts a user. Checking, varying, sharing, and exporting are what m
 | User problem | ChromaCraft answer |
 |---|---|
 | "I need colors for this idea or photo." | Generate from an image (with a mood such as muted or bright), a written concept, or a harmony rule. |
-| "Which colors go together, by color theory?" | Eight harmony rules on a color wheel, built around a base color. |
+| "Which colors go together, by color theory?" | Pick a base color on a color wheel and apply any of eight harmony rules; drag the colors on the wheel to fine-tune. |
 | "Keep the colors I like and change the rest." | Lock colors and regenerate with one key press. |
 | "Is this text readable?" | Contrast matrix with WCAG AA/AAA results, plus accessible alternatives. |
 | "Can people with color blindness tell these apart?" | Color-blindness simulation, with the pairs that become hard to tell apart flagged. |
@@ -64,7 +64,7 @@ The Coolors column reflects the features listed on its Pro plan page (checked No
 | Capability | Coolors | Adobe Color | ChromaCraft today | Decision | Size | Phase |
 |---|---|---|---|---|---|---|
 | Harmony rules | Generator (rules not listed) | 9: analogous, complementary, split complementary, triad, square, compound, shades, monochromatic, custom | 6 in the backend (no compound or shades); only 4 offered in the UI | Offer all rules in the UI and add compound and shades. "Custom" comes from manual editing (Phase 3). | S | 1 |
-| Color wheel editing | — | Drag color stops on a wheel | None | Adopt: wheel with draggable stops, kept in sync with the palette | M | 3 |
+| Color wheel | — | Create palettes on a wheel and drag color stops | None | Adopt as a creation option: pick a base color on the wheel and see the harmony rule's colors as markers (P1); drag individual stops for a custom palette (P3) | S–M, M | 1, 3 |
 | Palette size | Up to 10 (Pro) | Add colors | Harmony and image fixed at 5; AI up to 8 | Free: 2–10 colors in every generator, add/remove colors | S | 1 |
 | AI generation | Coolors AI (Pro) | Not on the color wheel ("does not use generative AI") | Concept → palette; image + concept transform | Keep as a differentiator; add rate and cost limits | — | 6 |
 | Palette from an image | Pick colors from an image (Pro list) | Extract with moods (colorful, bright, muted, deep, dark); JPEG, PNG, WebP up to 40 MB | Auto-extracts 5 colors; JPG/PNG up to 10 MB | Choose the count 2–10 (P1); moods and a click-to-pick eyedropper (P3); accept WebP (P6) | S–M | 1, 3, 6 |
@@ -97,7 +97,7 @@ Additions beyond both benchmarks that are cheap and solve real problems:
 
 ChromaCraft v1 is done only when a user can complete the following journey reliably:
 
-1. Create a palette of 2–10 colors from an image, a written concept, or any of the eight harmony rules.
+1. Create a palette of 2–10 colors from an image, a written concept, any of the eight harmony rules, or the color wheel.
 2. Edit any color, add or remove colors, reorder colors, and lock colors during regeneration (including with the spacebar).
 3. Assign practical roles such as primary, secondary, accent, surface, and text.
 4. See WCAG contrast results for the whole palette and for role pairs, preview the palette under common color-blindness types, and see which pairs become hard to tell apart.
@@ -176,13 +176,15 @@ Goal: a contributor can run, test, and deploy the existing application before ne
 - [x] Add or restore backend Pydantic request/response models.
 - [x] Merge PR #8 into `main` (November 13, 2026).
 - [x] Rename the hosted resources: Vercel and Railway projects `chroma-craft`, production domain `chromacraft-app.vercel.app`, Railway domain `chromacraft-production.up.railway.app`, and `NEXT_PUBLIC_API_URL` pointed at Railway (November 13, 2026).
-- [ ] Railway: set the config-as-code path to `/backend/railway.json`, remove any manual `PORT` variable, set `OPENAI_API_KEY`, and check that `/` responds (it currently returns 502).
-- [ ] Vercel: set `NEXT_PUBLIC_API_URL` to the Railway domain for Production and Preview, redeploy, and confirm that palette generation works on the production site.
+- [x] Railway: the domain targets port 8000 to match the app, and `/` responds (fixed November 13, 2026; the 502 was an 8080/8000 mismatch).
+- [x] Vercel: `NEXT_PUBLIC_API_URL` points at the Railway domain for Production and Preview, and palette generation works on `chromacraft-app.vercel.app` (verified November 13, 2026).
+- [ ] Railway: set the config-as-code path to `/backend/railway.json` so deploys use `python server.py` and the `/` health check. Afterwards, check that the deploy log port still matches the domain's port (8000).
+- [ ] Decide whether production gets AI text-to-palette: set `OPENAI_API_KEY` on Railway with a dedicated, budget-capped OpenAI project key, or hide the AI card when no key is set.
 - [ ] Add GitHub Actions CI: backend `pytest`, plus frontend lint, tests, and production build, on pull requests to `dev` and `main`.
 - [ ] Turn on Dependabot security updates. The vulnerable Next.js release blocked production deploys for months.
 - [ ] Install from a clean environment and correct dependency declarations.
 - [ ] Decide on `torch`/`sentence-transformers`. `/adjust-concept` uses them only to score a concept against six words, at the cost of a ~15 s first request, ~440 MB of memory, and a multi-GB image. Replace them with OpenAI embeddings or AI-returned adjustment weights, or keep them and document the cost.
-- [ ] Start frontend and backend together and exercise every implemented endpoint. (All endpoints except a live `/generate/concept` call were exercised on November 13, 2026.)
+- [ ] Start frontend and backend together and exercise every implemented endpoint. (Every endpoint was exercised locally and in production on November 13, 2026, except a live OpenAI `/generate/concept` call, which needs `OPENAI_API_KEY`.)
 - [ ] Align API paths, payload names, response types, and error shapes. (Paths, payloads, and response types now match.)
   - [ ] Return 400/422, not 500, for concept validation errors, and use the codes in `backend/constants/error_codes.py`.
   - [ ] Route image upload and concept adjustment through the API client, and show their errors in the UI.
@@ -204,6 +206,7 @@ Goal: a user can generate, check, vary, and share a palette of up to 10 colors w
 - [ ] Replace the client-side lock-position workaround (`frontend/lib/palette-locks.ts`) with ID-based locks, and let the backend accept locked positions.
 - [ ] Support 2–10 colors in every generator: add a `color_count` parameter to `/generate/random` and `/extract-colors`, offer up to 10 in the AI flow, and add add/remove-color controls. [S]
 - [ ] Offer all harmony rules in the UI (today only 4 of the backend's 6 are shown), and add compound and shades to the backend. [S]
+- [ ] Color wheel as a creation option alongside Random and the harmony buttons: pick a base color on the wheel, see the chosen harmony rule's colors as markers, and watch the palette update live. Locked colors stay fixed. Works with keyboard and touch as well as mouse. [S–M]
 - [ ] Spacebar regenerates unlocked colors, and keyboard focus is preserved. [S]
 - [ ] Contrast matrix: every color against every other, with ratio and AA/AAA for normal and large text, reusing `color-utils.ts`. Turn on the swatch contrast badge. [S]
 - [ ] Shades-and-tints scale (50–950) for any color, with copy and "add to palette". [S]
@@ -246,7 +249,7 @@ Goal: generated colors can be refined into a practical color system.
 - [ ] Live preview: one responsive template that uses the assigned roles. [M]
 - [ ] Eyedropper: click the uploaded image to pick an exact color into the palette. [M]
 - [ ] Image extraction moods (colorful, bright, muted, deep, dark) that choose different colors from the same image. [S–M]
-- [ ] Color wheel with draggable stops, kept in sync with the palette and the harmony rule. [M]
+- [ ] Color wheel editing: drag individual color stops to customize the palette (a "custom" harmony), with brightness and saturation controls, kept in sync with the palette in both directions. [M]
 
 **Phase 3 exit criteria:** a user can deliberately refine a generated palette, understand its accessibility, and undo mistakes.
 
@@ -392,5 +395,5 @@ These ideas may be valuable later but currently dilute the core outcome:
 1. Finish the `chromacraft` renames and the Railway and Vercel settings, and confirm production responds.
 2. Add CI and Dependabot so `main` cannot silently break again.
 3. Build the one-workspace palette model (Phase 1, first two items).
-4. Ship the Phase 1 tools in this order: 2–10 colors, all harmony rules, contrast matrix, shades and tints, share link, color-blindness check, copy-as-code.
+4. Ship the Phase 1 tools in this order: 2–10 colors, all harmony rules, color wheel, contrast matrix, shades and tints, share link, color-blindness check, copy-as-code.
 5. Continue through Phases 2–6 until every useful v1 Definition of Done item is verified.
