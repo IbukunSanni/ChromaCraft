@@ -12,27 +12,69 @@ from utils.color_utils import (
     adjust_saturation
 )
 
-MODEL_NAME = "paraphrase-albert-small-v2"
+MODEL_REPO = "sentence-transformers/paraphrase-albert-small-v2"
+# The model's own sentence-transformers config: mean pooling over the tokens,
+# no normalization, inputs truncated to 100 tokens. Changing any of these
+# changes the vectors and so every concept weight.
+MAX_SEQ_LENGTH = 100
 REFERENCE_LABELS = ["bright", "dark", "warm", "cool", "saturated", "desaturated"]
 
-# The sentence-transformer model (and torch) is loaded on first use rather than
-# at import time, so the API starts quickly and endpoints that do not need it
-# (health, harmony generation, image extraction, export) never pay for it.
+
+class OnnxSentenceEncoder:
+    """The same model sentence-transformers would load, run through ONNX Runtime.
+
+    The model repo ships an ONNX export of the transformer and a fast
+    tokenizer, so torch is not needed at all. The pooling step that
+    sentence-transformers would add is done here in numpy.
+    """
+
+    def __init__(self, repo_id: str = MODEL_REPO):
+        from huggingface_hub import hf_hub_download
+        import onnxruntime as ort
+        from tokenizers import Tokenizer
+
+        self._tokenizer = Tokenizer.from_file(hf_hub_download(repo_id, "tokenizer.json"))
+        self._tokenizer.enable_truncation(max_length=MAX_SEQ_LENGTH)
+        self._tokenizer.no_padding()
+        self._session = ort.InferenceSession(
+            hf_hub_download(repo_id, "onnx/model.onnx"),
+            providers=["CPUExecutionProvider"],
+        )
+        self._input_names = {i.name for i in self._session.get_inputs()}
+
+    def encode(self, text: str) -> np.ndarray:
+        enc = self._tokenizer.encode(text)
+        mask = np.array([enc.attention_mask], dtype=np.int64)
+        feeds = {
+            "input_ids": np.array([enc.ids], dtype=np.int64),
+            "attention_mask": mask,
+            "token_type_ids": np.array([enc.type_ids], dtype=np.int64),
+        }
+        hidden = self._session.run(
+            None, {k: v for k, v in feeds.items() if k in self._input_names}
+        )[0]
+        # Mean over real tokens only: padding must not pull the average.
+        weights = mask[..., None].astype(np.float32)
+        pooled = (hidden * weights).sum(axis=1) / np.clip(weights.sum(axis=1), 1e-9, None)
+        return pooled[0]
+
+
+# The model is loaded on first use rather than at import time, so the API starts
+# quickly and endpoints that do not need it (health, harmony generation, image
+# extraction, export) never pay for it.
 _model = None
 _reference_encodings = None
 _model_lock = threading.Lock()
 
 
 def _load_model():
-    """Load the transformer model and reference encodings once (thread-safe)."""
+    """Load the encoder and reference encodings once (thread-safe)."""
     global _model, _reference_encodings
     if _model is None:
         with _model_lock:
             if _model is None:
-                from sentence_transformers import SentenceTransformer
-
-                print("🧠 Loading transformer model...")
-                model = SentenceTransformer(MODEL_NAME)
+                print("🧠 Loading ONNX sentence encoder...")
+                model = OnnxSentenceEncoder()
                 _reference_encodings = {
                     label: model.encode(label) for label in REFERENCE_LABELS
                 }

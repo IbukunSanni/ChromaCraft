@@ -53,9 +53,9 @@ class AIConstants:
 class ModelConstants:
     """Constants for machine learning models."""
     
-    # Sentence transformer model
+    # Sentence embedding model, run through ONNX Runtime on the CPU
     SENTENCE_TRANSFORMER_MODEL = "paraphrase-albert-small-v2"
-    SENTENCE_TRANSFORMER_DEVICE = "cpu"  # Use CPU for consistency
+    SENTENCE_TRANSFORMER_DEVICE = "cpu"
     
     # Embedding dimensions
     CONCEPT_EMBEDDING_DIM = 768  # ALBERT small embedding size

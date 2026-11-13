@@ -92,7 +92,7 @@ PowerShell:
 python -m venv backend/.venv
 backend/.venv/Scripts/Activate.ps1
 python -m pip install --upgrade pip
-python -m pip install -r backend/requirements.txt
+python -m pip install -r backend/requirements-dev.txt
 ```
 
 macOS/Linux:
@@ -101,7 +101,7 @@ macOS/Linux:
 python -m venv backend/.venv
 source backend/.venv/bin/activate
 python -m pip install --upgrade pip
-python -m pip install -r backend/requirements.txt
+python -m pip install -r backend/requirements-dev.txt
 ```
 
 ### Configure the environment
@@ -157,7 +157,7 @@ Run the backend tests with the backend virtual environment active. Verified on N
 - `pnpm run test:backend`: 62 tests pass in about 2 seconds
 - `pnpm run lint:frontend`: no warnings or errors (the backend has no linter configured yet)
 
-The first `/adjust-concept` request loads the sentence-transformer model, so it takes about 15 seconds; later requests are fast. `backend/demos/api_smoke_check.py` is a manual script that calls a running server on port 8000; it is not part of the pytest suite.
+The first `/adjust-concept` request downloads the embedding model's ONNX export from Hugging Face (about 45 MB, cached after that) and loads it through ONNX Runtime; later requests are fast. `backend/demos/api_smoke_check.py` is a manual script that calls a running server on port 8000; it is not part of the pytest suite.
 
 ## Deployment
 
@@ -200,7 +200,7 @@ Railway settings live in `backend/railway.json` (start command `python server.py
 | Config-as-code path | `/backend/railway.json` |
 | Public domain | `chromacraft-production.up.railway.app`, targeting the port the app logs at startup (Railway's injected `PORT`, normally 8080) |
 
-`backend/server.py` reads `$PORT` and binds to `0.0.0.0`, so do not define a `PORT` variable yourself. `backend/Procfile` declares the same start command for builders that read Procfiles, and `backend/.python-version` pins Python 3.12. `requirements.txt` installs the CPU-only PyTorch build, which avoids several GB of unused GPU libraries.
+`backend/server.py` reads `$PORT` and binds to `0.0.0.0`, so do not define a `PORT` variable yourself. `backend/Procfile` declares the same start command for builders that read Procfiles, and `backend/.python-version` pins Python 3.12. `requirements.txt` holds runtime dependencies only (test tools are in `requirements-dev.txt`), and the concept embeddings run on ONNX Runtime, so the image has no PyTorch.
 
 Variables:
 
