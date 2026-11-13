@@ -23,15 +23,16 @@ class Config:
         ).split(",")
         if origin.strip()
     ]
-    # Regex for the deployed frontend: the "chromacraft" Vercel project's
-    # production domain (chromacraft-<name>.vercel.app) and its preview
-    # deployments (chromacraft-<hash>-<team>.vercel.app,
-    # chromacraft-git-<branch>-<team>.vercel.app). The bare
+    # Regex for the deployed frontend: the production domain
+    # (chromacraft-app.vercel.app) and the Vercel project's preview deployments,
+    # which are named after the project ("chroma-craft"), e.g.
+    # chroma-craft-<hash>-<team>.vercel.app and
+    # chroma-craft-git-<branch>-<team>.vercel.app. The bare
     # chromacraft.vercel.app belongs to another project and is not matched.
     # Wildcards inside ALLOWED_ORIGINS are not supported by CORSMiddleware.
     ALLOWED_ORIGIN_REGEX = os.getenv(
         "ALLOWED_ORIGIN_REGEX",
-        r"https://chromacraft-[a-z0-9-]+\.vercel\.app",
+        r"https://chroma-?craft-[a-z0-9-]+\.vercel\.app",
     ) or None
     
     @classmethod

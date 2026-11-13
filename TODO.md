@@ -164,7 +164,7 @@ Goal: a contributor can run, test, and deploy the existing application before ne
 
 - [x] Add or restore backend Pydantic request/response models.
 - [x] Merge PR #8 into `main` (November 13, 2026).
-- [ ] Name every hosted resource `chromacraft`: the Vercel project, the Railway project and service, and the Railway domain `chromacraft-production.up.railway.app`.
+- [x] Rename the hosted resources: Vercel and Railway projects `chroma-craft`, production domain `chromacraft-app.vercel.app`, Railway domain `chromacraft-production.up.railway.app`, and `NEXT_PUBLIC_API_URL` pointed at Railway (November 13, 2026).
 - [ ] Railway: set the config-as-code path to `/backend/railway.json`, remove any manual `PORT` variable, set `OPENAI_API_KEY`, and check that `/` responds (it currently returns 502).
 - [ ] Vercel: set `NEXT_PUBLIC_API_URL` to the Railway domain for Production and Preview, redeploy, and confirm that palette generation works on the production site.
 - [ ] Add GitHub Actions CI: backend `pytest`, plus frontend lint, tests, and production build, on pull requests to `dev` and `main`.

@@ -120,7 +120,7 @@ Optional CORS settings (defaults shown):
 
 ```env
 ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
-ALLOWED_ORIGIN_REGEX=https://chromacraft-[a-z0-9-]+\.vercel\.app
+ALLOWED_ORIGIN_REGEX=https://chroma-?craft-[a-z0-9-]+\.vercel\.app
 ```
 
 Never commit `.env` or expose `OPENAI_API_KEY` through a `NEXT_PUBLIC_*` variable.
@@ -161,16 +161,14 @@ The first `/adjust-concept` request downloads the embedding model's ONNX export 
 
 ## Deployment
 
-Every hosted resource is named `chromacraft`.
-
-| Piece | Host | Name |
+| Piece | Host | Names |
 |---|---|---|
-| Frontend | Vercel | project `chromacraft` |
-| Backend API | Railway | project `chromacraft`, service `chromacraft`, domain `chromacraft-production.up.railway.app` |
+| Frontend | Vercel | project `chroma-craft`, production domain `https://chromacraft-app.vercel.app` |
+| Backend API | Railway | project `chroma-craft`, service `ChromaCraft`, domain `https://chromacraft-production.up.railway.app` |
 
 Both deploy from the `main` branch. Pushes to `dev` create Vercel preview deployments.
 
-### Vercel frontend (project `chromacraft`)
+### Vercel frontend (project `chroma-craft`)
 
 | Setting | Value |
 |---|---|
@@ -188,9 +186,9 @@ NEXT_PUBLIC_API_URL=https://chromacraft-production.up.railway.app
 
 Next.js bakes `NEXT_PUBLIC_*` values into the build, so redeploy after changing it. Without it, the browser falls back to `http://localhost:8000` and cannot reach the deployed API.
 
-`chromacraft.vercel.app` belongs to an unrelated project, so the production domain uses a `chromacraft-` prefix, for example `chromacraft-app.vercel.app`.
+`chromacraft.vercel.app` belongs to an unrelated project, so the production domain is `chromacraft-app.vercel.app`. The old `color-palette-extractor.vercel.app` domain was removed.
 
-### Railway backend (project and service `chromacraft`)
+### Railway backend (project `chroma-craft`, service `ChromaCraft`)
 
 Railway settings live in `backend/railway.json` (start command `python server.py`, health check `/`, restart on failure). Railway does not apply the service's Root Directory to the config file path, so set it explicitly:
 
@@ -212,7 +210,7 @@ MAX_REQUESTS_PER_MINUTE=60
 
 ### Cross-origin requests
 
-CORS origins come from `ALLOWED_ORIGINS` (exact origins, default: local development) and `ALLOWED_ORIGIN_REGEX` (default: the `chromacraft` Vercel project's production and preview domains, `chromacraft-….vercel.app`). If the frontend gets a custom domain, add it to `ALLOWED_ORIGINS` in Railway.
+CORS origins come from `ALLOWED_ORIGINS` (exact origins, default: local development) and `ALLOWED_ORIGIN_REGEX`. The default regex matches the production domain `chromacraft-app.vercel.app` and the preview deployments, which Vercel names after the project (`chroma-craft-….vercel.app`). If the frontend gets a custom domain, add it to `ALLOWED_ORIGINS` in Railway.
 
 ## Deployment status
 
@@ -237,7 +235,7 @@ After PR #8 was merged on November 13, 2026:
 
 Follow-up changes: the `chromacraft` naming, `backend/server.py` binding to `$PORT`, `backend/railway.json` with a health check, the CPU-only PyTorch build, and removal of the unused `backend/render.yaml`.
 
-Still to do in the provider dashboards: rename the Railway project, service, and domain, and the Vercel project, to `chromacraft`; set the config-as-code path; remove any manual `PORT` variable; point `NEXT_PUBLIC_API_URL` at the Railway domain; then redeploy.
+Since then, the Vercel and Railway projects were renamed, the production domain became `chromacraft-app.vercel.app`, the Railway domain became `chromacraft-production.up.railway.app`, and `NEXT_PUBLIC_API_URL` (Production and Preview) points at that Railway domain.
 
 ## API surface currently implemented
 

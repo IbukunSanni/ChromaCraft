@@ -57,6 +57,8 @@ class TestCors:
             "https://chromacraft-app.vercel.app",
             "https://chromacraft-74qrycbse-ibukunsanni-projects.vercel.app",
             "https://chromacraft-git-dev-ibukunsanni-projects.vercel.app",
+            "https://chroma-craft-l7wnbo94l-ibukunsanni-projects.vercel.app",
+            "https://chroma-craft-git-dev-ibukunsanni-projects.vercel.app",
         ],
     )
     def test_allowed_origins(self, origin):
@@ -75,6 +77,7 @@ class TestCors:
         [
             "https://evil.vercel.app",
             "https://chromacraft.vercel.app",
+            "https://chroma-craft.vercel.app",
             "https://chromacraft-app.vercel.app.evil.com",
             "https://color-palette-extractor.vercel.app",
         ],
