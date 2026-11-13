@@ -69,6 +69,8 @@ wheels/
 *.safetensors
 *.onnx
 models/
+# backend/models is the Pydantic request/response package, not ML weights
+!backend/models/
 checkpoints/
 model_weights/
 

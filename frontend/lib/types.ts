@@ -35,56 +35,48 @@ export interface ConceptGenerationRequest {
   };
 }
 
-export interface PaletteEditRequest {
-  colors: string[];
-  command: string;
-  intensity?: number; // 0.1 to 1.0
-}
+// Harmony types accepted by POST /generate/random
+export type HarmonyType =
+  | 'complementary'
+  | 'triadic'
+  | 'analogous'
+  | 'tetradic'
+  | 'monochromatic'
+  | 'split_complementary';
 
+// Field names match the FastAPI request model (snake_case)
 export interface RandomGenerationRequest {
-  lockedColors?: string[];
-  harmonyType?: 'complementary' | 'triadic' | 'analogous' | 'monochromatic';
+  locked_colors?: string[];
+  harmony_type?: HarmonyType;
 }
 
 
 export interface ExportRequest {
   colors: string[];
-  names: string[];
-  formatOptions?: {
-    size?: 'small' | 'medium' | 'large';
-    includeNames?: boolean;
-    includeHex?: boolean;
-  };
-}
-
-export interface AccessibilityValidationRequest {
-  colors: string[];
 }
 
 // API Response types
+// Response types mirror backend/models (FastAPI response models)
 export interface ColorExtractionResponse {
   colors: string[];
   names: string[];
-  dominantInfo?: {
-    clusters: number;
-    processingTime: number;
-  };
 }
 
-
-export interface PaletteEditResponse {
-  colors: string[];
+export interface ConceptAdjustmentResponse {
+  adjusted_colors: string[];
   names: string[];
-  editApplied: string;
 }
 
 export interface RandomGenerationResponse {
   colors: string[];
   names: string[];
-  harmonyInfo: {
-    type: string;
-    baseColor?: string;
-    relationships: string[];
+  harmony_info: {
+    valid: boolean;
+    harmony_type: string;
+    confidence: number;
+    details?: Record<string, unknown>;
+    locked_colors_count?: number;
+    locked_colors?: string[];
   };
 }
 
@@ -93,22 +85,11 @@ export interface ConceptGenerationResponse {
   names: string[];
   harmony_info: {
     type: string;
-    concept: string;
+    mood: string;
     description: string;
     source: string;
     model: string;
   };
-  concept: string;  // Original concept returned
-}
-
-export interface AccessibilityValidationResponse {
-  contrastRatios: Record<string, number>[];
-  wcagCompliance: {
-    aa: boolean;
-    aaa: boolean;
-    issues: string[];
-  };
-  suggestions: string[];
 }
 
 // Error types
@@ -159,21 +140,13 @@ export interface ConceptInputProps {
   error?: string | null;
 }
 
-export interface ConceptEditorProps {
-  currentPalette: ColorPalette;
-  onPaletteEdit: (request: PaletteEditRequest) => void;
-  isLoading: boolean;
-  error?: string | null;
-}
-
 export interface ExportPanelProps {
   palette: ColorPalette;
-  onExport: (format: ExportState['format'], options?: ExportRequest['formatOptions']) => void;
+  onExport: (format: ExportState['format']) => void;
   exportState: ExportState;
 }
 
 // Utility types
 export type GenerationMethod = ColorPalette['metadata']['generationMethod'];
-export type HarmonyType = RandomGenerationRequest['harmonyType'];
 export type ExportFormat = ExportState['format'];
 export type WCAGLevel = NonNullable<ColorInfo['accessibility']>['wcagLevel'];

@@ -44,10 +44,13 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 utils_dir = os.path.join(os.path.dirname(script_dir), "utils")
 file_path = os.path.join(utils_dir, "color_names.json")
 
-# Load the JSON content
-with open(file_path, "r") as f:
-    colors = json.load(f)
+# Load the JSON content. The dataset is stored as
+# {"description": ..., "colors": [{"color": name, "hex": value}, ...]};
+# a bare list of entries is also accepted.
+with open(file_path, "r", encoding="utf-8") as f:
+    data = json.load(f)
 
+colors = data["colors"] if isinstance(data, dict) else data
 
 xkcd_colors = {item["color"]: item["hex"] for item in colors}
 # print(xkcd_colors)

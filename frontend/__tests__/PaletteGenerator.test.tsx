@@ -20,9 +20,10 @@ describe('PaletteGenerator', () => {
   const mockPaletteResponse = {
     colors: ['#FF5733', '#33FF57', '#3357FF', '#F333FF', '#33FFF3'],
     names: ['Red Orange', 'Green', 'Blue', 'Magenta', 'Cyan'],
-    harmonyInfo: {
-      type: 'random',
-      relationships: ['base', 'complement', 'triadic', 'split-complement', 'analogous'],
+    harmony_info: {
+      valid: true,
+      harmony_type: 'random',
+      confidence: 1,
     },
   };
 
@@ -58,8 +59,8 @@ describe('PaletteGenerator', () => {
     });
     
     expect(mockApiClient.generateRandomPalette).toHaveBeenCalledWith({
-      lockedColors: undefined,
-      harmonyType: undefined,
+      locked_colors: undefined,
+      harmony_type: undefined,
     });
     
     await waitFor(() => {
@@ -77,8 +78,8 @@ describe('PaletteGenerator', () => {
     });
     
     expect(mockApiClient.generateRandomPalette).toHaveBeenCalledWith({
-      lockedColors: undefined,
-      harmonyType: 'complementary',
+      locked_colors: undefined,
+      harmony_type: 'complementary',
     });
   });
 
@@ -193,8 +194,8 @@ describe('PaletteGenerator', () => {
     
     await waitFor(() => {
       expect(mockApiClient.generateRandomPalette).toHaveBeenLastCalledWith({
-        lockedColors: ['#FF5733'],
-        harmonyType: undefined,
+        locked_colors: ['#FF5733'],
+        harmony_type: undefined,
       });
     });
   });

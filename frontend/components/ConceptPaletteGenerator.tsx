@@ -77,7 +77,7 @@ export default function ConceptPaletteGenerator({
         metadata: {
           generationMethod: 'concept',
           timestamp: new Date().toISOString(),
-          source: `AI Concept: "${response.concept || trimmedConcept}"`,
+          source: `AI Concept: "${trimmedConcept}"`,
         },
       };
 

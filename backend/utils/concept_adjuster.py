@@ -1,20 +1,8 @@
-from sentence_transformers import SentenceTransformer
-from sklearn.metrics.pairwise import cosine_similarity
-from starlette.concurrency import run_in_threadpool
-import numpy as np
 import gc
+import threading
 
-# ✅ Load small model once globally
-print("🧠 Loading transformer model...")
-model = SentenceTransformer("paraphrase-albert-small-v2")
-print("✅ Model loaded.")
-
-# ✅ Cache reference concept encodings once
-REFERENCE_ENCODINGS = {
-    label: model.encode(label)
-    for label in ["bright", "dark", "warm", "cool", "saturated", "desaturated"]
-}
-
+import numpy as np
+from starlette.concurrency import run_in_threadpool
 
 # Import color utilities
 from utils.color_utils import (
@@ -24,19 +12,53 @@ from utils.color_utils import (
     adjust_saturation
 )
 
+MODEL_NAME = "paraphrase-albert-small-v2"
+REFERENCE_LABELS = ["bright", "dark", "warm", "cool", "saturated", "desaturated"]
+
+# The sentence-transformer model (and torch) is loaded on first use rather than
+# at import time, so the API starts quickly and endpoints that do not need it
+# (health, harmony generation, image extraction, export) never pay for it.
+_model = None
+_reference_encodings = None
+_model_lock = threading.Lock()
+
+
+def _load_model():
+    """Load the transformer model and reference encodings once (thread-safe)."""
+    global _model, _reference_encodings
+    if _model is None:
+        with _model_lock:
+            if _model is None:
+                from sentence_transformers import SentenceTransformer
+
+                print("🧠 Loading transformer model...")
+                model = SentenceTransformer(MODEL_NAME)
+                _reference_encodings = {
+                    label: model.encode(label) for label in REFERENCE_LABELS
+                }
+                _model = model
+                print("✅ Model loaded.")
+    return _model, _reference_encodings
+
+
+def _encode_with_references(concept: str):
+    model, reference_encodings = _load_model()
+    return model.encode(concept), reference_encodings
+
 
 # 🧠 Encode concept string → vector (offloaded to threadpool)
 async def concept_vector(concept: str):
-    return await run_in_threadpool(model.encode, concept)
+    vec, _ = await run_in_threadpool(_encode_with_references, concept)
+    return vec
 
 
 # ✅ Compute similarity weights for a given concept
 async def get_adjustment_weights(concept: str):
-    vec = await concept_vector(concept)
+    vec, reference_encodings = await run_in_threadpool(_encode_with_references, concept)
     weights = {}
-    for key, ref_vec in REFERENCE_ENCODINGS.items():
+    for key, ref_vec in reference_encodings.items():
         sim = np.dot(vec, ref_vec) / (np.linalg.norm(vec) * np.linalg.norm(ref_vec))
-        weights[key] = sim
+        weights[key] = float(sim)
     del vec
     gc.collect()
     return weights

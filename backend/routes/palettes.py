@@ -9,6 +9,7 @@ from services.palette_service import PaletteService
 from routes.health import print_mem
 from models import RandomPaletteRequest, ConceptPaletteRequest, PaletteResponse
 from constants import ErrorCodes, ErrorMessages, HTTPStatusCodes
+from utils.openai_palette_generator import AIUnavailableError
 
 router = APIRouter(prefix="/generate", tags=["palette-generation"])
 palette_service = PaletteService()
@@ -45,7 +46,12 @@ async def generate_palette_from_concept(request: ConceptPaletteRequest):
         print_mem("after /generate/concept")
         
         return PaletteResponse(**result)
-        
+
+    except AIUnavailableError as e:
+        raise HTTPException(
+            status_code=HTTPStatusCodes.SERVICE_UNAVAILABLE,
+            detail=str(e)
+        )
     except Exception as e:
         print(f"❌ Error in /generate/concept: {e}")
         raise HTTPException(
