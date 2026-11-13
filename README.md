@@ -40,7 +40,7 @@ The intended production arrangement is:
 
 - **Vercel:** `frontend/`
 - **Railway:** `backend/`
-- **PostgreSQL:** add later when cloud accounts and cross-device synchronization are implemented
+- **Supabase:** Postgres and Auth, added when cloud accounts and cross-device sync are built (after v1). FastAPI on Railway will be the only code that reads and writes it; the frontend uses Supabase only to sign in.
 - **IndexedDB:** planned first persistence layer for anonymous, local-first use
 
 ## Repository structure

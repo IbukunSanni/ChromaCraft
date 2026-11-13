@@ -37,6 +37,17 @@ Generation attracts a user. Checking, varying, sharing, and exporting are what m
 | "Send it to someone, or open it on another device." | A share link that encodes the palette in the URL. No account or server storage. |
 | "Don't lose my work." | Local autosave, a palette library, and version history. |
 
+## Platform
+
+ChromaCraft uses the same stack as the other products: one host per job, no extra services without a measured need.
+
+| Job | Service | ChromaCraft |
+|---|---|---|
+| Frontend | Vercel | Project `chroma-craft`, `https://chromacraft-app.vercel.app` |
+| API (AI, images, palettes) | Railway | Service `ChromaCraft`, `https://chromacraft-production.up.railway.app` |
+| Database, sign-in, file storage | Supabase | Not needed until cloud persistence (after v1) |
+| Code, CI, dependency updates | GitHub | `IbukunSanni/ChromaCraft`, Actions, Dependabot |
+
 ## Benchmark: Coolors and Adobe Color
 
 ChromaCraft is compared against the two tools people most often use for palettes:
@@ -301,28 +312,42 @@ Goal: close the remaining practical gaps with Coolors and Adobe Color using loca
 
 ## After useful v1
 
-### Cloud persistence
+### Cloud persistence (Supabase)
 
-Cloud persistence is the next milestone, not a prerequisite for validating the local-first product.
+Cloud persistence is the next milestone, not a prerequisite for validating the local-first product. It uses Supabase Postgres for data and Supabase Auth for sign-in.
+
+How the pieces fit:
+
+- The frontend uses `supabase-js` only to sign in. It sends the user's access token with each request to the API.
+- FastAPI on Railway verifies the token against the Supabase project's published signing keys and is the only code that reads or writes the database. Every query is scoped to the signed-in user.
+- Row-level security is enabled on every table with no public policies, so the public anon key cannot read data directly.
+- Railway connects through Supabase's **session pooler** connection string, which works over IPv4. Railway's outbound IPv6 is off by default, and Supabase's direct database host is IPv6-only.
+- The Supabase project lives in the same region as the Railway service.
+- The Phase 2 `PaletteRepository` gets a second implementation that calls the API, so local and cloud storage share one interface.
 
 When users need cross-device access beyond share links:
 
-- [ ] Add PostgreSQL-backed users, palettes, palette versions, and optional source-image records.
-- [ ] Add managed authentication rather than implementing password storage.
+- [ ] Create a `chromacraft` Supabase project in the Railway service's region.
+- [ ] Add tables for palettes, palette versions, and optional source-image records, with SQLAlchemy models and Alembic migrations in `backend/` (row-level security policies included in the migrations).
+- [ ] Sign in with Supabase Auth (email magic link, plus Google and GitHub); ChromaCraft never stores passwords.
+- [ ] Verify Supabase access tokens in FastAPI and reject requests for another user's data.
+- [ ] Set the variables: on Railway, `DATABASE_URL` (session pooler) and `SUPABASE_URL`; on Vercel, `NEXT_PUBLIC_SUPABASE_URL` and the public anon (publishable) key. Never expose the service-role key to the browser.
 - [ ] Keep anonymous local use available.
 - [ ] Offer an explicit local-to-cloud import after sign-in.
 - [ ] Create a new version on sync conflict instead of silently overwriting.
 - [ ] Add read-only share links with revocation for saved palettes.
 - [ ] Add a public or private profile page.
-- [ ] Define account export and deletion behavior before launch.
+- [ ] Store source images only when a user explicitly keeps them, in a private Supabase Storage bucket.
+- [ ] Define account export and deletion behavior before launch, including deleting the Supabase Auth user and their storage files.
+- [ ] Plan for Supabase Pro once cloud sync is live: free projects pause after about a week without activity, and the free plan allows two active projects.
 
-Suggested backend resources:
+Suggested resources:
 
 ```text
-users
-palettes
-palette_versions
-source_images (optional, explicit retention only)
+auth.users          (managed by Supabase Auth)
+palettes            (owner = auth.users.id)
+palette_versions    (JSON snapshot per version)
+source_images       (optional, explicit retention only; files in Supabase Storage)
 ```
 
 Palette version snapshots may use JSON initially. Normalize color records only when real query requirements justify the added complexity.
@@ -330,7 +355,7 @@ Palette version snapshots may use JSON initially. Normalize color records only w
 ### Free and paid boundary (if ChromaCraft is ever monetized)
 
 - Always free: everything that runs in the browser (all generators except AI volume, palette size up to 10, contrast, variations, simulation, preview, exports, the local library, share links).
-- Candidates for a paid tier, because they have a running cost: higher AI generation limits, cloud sync across devices, team workspaces.
+- Candidates for a paid tier, because they have a running cost: higher AI generation limits, cloud sync across devices, team workspaces. Per-user limits and plans would live in Supabase Postgres.
 
 ## Deferred until after useful v1
 
