@@ -257,7 +257,7 @@ Request and response field names are snake_case and match `backend/models/`. `fr
 
 The useful-v1 goal is not simply to produce five colors. It is to let a user create, refine, validate, save, recover, version, manage, and export an implementation-ready color system without requiring an account.
 
-The roadmap is benchmarked against Coolors Pro. Every tool that runs in the browser is free in ChromaCraft: palettes of up to 10 colors, contrast checking, shades and tints, color-blindness simulation, previews, share links, and exports. Only features with a running cost, such as AI volume and cloud sync, are candidates for a paid tier.
+The roadmap is benchmarked against Coolors and Adobe Color. The aim is Coolors' speed and AI plus Adobe Color's color theory and accessibility tools, free and without an account. Every tool that runs in the browser is free: palettes of up to 10 colors, all harmony rules, contrast and color-blindness checks, shades and tints, previews, share links, and exports to code, Figma tokens, and Adobe apps (ASE). Only features with a running cost, such as AI volume and cloud sync, are candidates for a paid tier.
 
 The complete scope, acceptance criteria, deferred features, and working rules are maintained in [TODO.md](./TODO.md).
 
