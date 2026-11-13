@@ -7,28 +7,19 @@
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 export const API_ENDPOINTS = {
+  // Only routes implemented by the FastAPI backend belong here.
   // Color generation endpoints
   GENERATE_RANDOM: '/generate/random',
   GENERATE_CONCEPT: '/generate/concept',
   EXTRACT_COLORS: '/extract-colors',
-  
-  // Palette editing endpoints
-  EDIT_PALETTE: '/edit/palette',
-  
-  // Validation endpoints
-  VALIDATE_ACCESSIBILITY: '/validate/accessibility',
+  ADJUST_CONCEPT: '/adjust-concept',
   
   // Export endpoints
   EXPORT_PNG: '/export-png',
-  EXPORT_JSON: '/export/json',
-  EXPORT_ASE: '/export/ase',
   
   // Utility endpoints
   HEALTH_CHECK: '/',
   MEMORY_USAGE: '/mem',
-  
-  // Legacy endpoints (for backward compatibility)
-  ADJUST_CONCEPT: '/adjust-concept',
 } as const;
 
 export const API_CONFIG = {
@@ -60,7 +51,7 @@ export const COLOR_HARMONY_TYPES = {
   ANALOGOUS: 'analogous',
   MONOCHROMATIC: 'monochromatic',
   TETRADIC: 'tetradic',
-  SPLIT_COMPLEMENTARY: 'split-complementary',
+  SPLIT_COMPLEMENTARY: 'split_complementary',
 } as const;
 
 // Concept adjustment constants

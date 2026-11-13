@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { ColorPalette, PaletteGeneratorState, RandomGenerationRequest } from "@/lib/types";
+import { ColorPalette, HarmonyType, PaletteGeneratorState, RandomGenerationRequest } from "@/lib/types";
 import { apiClient } from "@/lib/api-client";
+import { getSortedLockedIndices, restoreLockedPositions } from "@/lib/palette-locks";
 import PaletteDisplay from "./PaletteDisplay";
 
 interface PaletteGeneratorProps {
@@ -23,13 +24,12 @@ export default function PaletteGenerator({
   });
 
   const updateState = useCallback((updates: Partial<PaletteGeneratorState>) => {
-    setState(prev => {
-      const newState = { ...prev, ...updates };
-      if (updates.currentPalette !== undefined && onPaletteChange) {
-        onPaletteChange(newState.currentPalette);
-      }
-      return newState;
-    });
+    setState(prev => ({ ...prev, ...updates }));
+    // Notify the parent outside the state updater so React does not see a
+    // parent update during this component's render.
+    if (updates.currentPalette !== undefined) {
+      onPaletteChange?.(updates.currentPalette);
+    }
   }, [onPaletteChange]);
 
   const handleToggleLock = useCallback((index: number) => {
@@ -44,30 +44,31 @@ export default function PaletteGenerator({
     });
   }, []);
 
-  const generateRandomPalette = useCallback(async (harmonyType?: string) => {
+  const generateRandomPalette = useCallback(async (harmonyType?: HarmonyType) => {
     updateState({ isLoading: true, error: null, generationMethod: 'random' });
 
     try {
-      // Prepare locked colors for the API request
-      const lockedColors: string[] = [];
-      if (state.currentPalette && state.lockedColors.size > 0) {
-        state.lockedColors.forEach(index => {
-          if (state.currentPalette!.colors[index]) {
-            lockedColors.push(state.currentPalette!.colors[index]);
-          }
-        });
-      }
+      // Prepare locked colors for the API request (ordered by position)
+      const previousPalette = state.currentPalette;
+      const lockedIndices = getSortedLockedIndices(state.lockedColors, previousPalette);
+      const lockedColors = lockedIndices.map(index => previousPalette!.colors[index]);
 
       const request: RandomGenerationRequest = {
-        lockedColors: lockedColors.length > 0 ? lockedColors : undefined,
-        harmonyType: harmonyType as 'complementary' | 'triadic' | 'analogous' | 'monochromatic',
+        locked_colors: lockedColors.length > 0 ? lockedColors : undefined,
+        harmony_type: harmonyType,
       };
 
       const response = await apiClient.generateRandomPalette(request);
 
+      // The backend returns locked colors first; put them back where the
+      // user locked them.
+      const restored = previousPalette
+        ? restoreLockedPositions(response, lockedIndices, previousPalette)
+        : { colors: response.colors, names: response.names, lockedIndices: [] };
+
       const newPalette: ColorPalette = {
-        colors: response.colors,
-        names: response.names,
+        colors: restored.colors,
+        names: restored.names,
         metadata: {
           generationMethod: 'random',
           timestamp: new Date().toISOString(),
@@ -77,6 +78,7 @@ export default function PaletteGenerator({
 
       updateState({ 
         currentPalette: newPalette, 
+        lockedColors: new Set(restored.lockedIndices),
         isLoading: false,
         error: null,
       });

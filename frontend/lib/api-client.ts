@@ -5,14 +5,10 @@
 
 import { 
   ColorExtractionResponse,
-  PaletteEditResponse,
   RandomGenerationResponse,
   ConceptGenerationResponse,
-  AccessibilityValidationResponse,
-  PaletteEditRequest,
   RandomGenerationRequest,
   ConceptGenerationRequest,
-  AccessibilityValidationRequest,
   ExportRequest
 } from './types';
 import { 
@@ -137,41 +133,13 @@ class APIClient {
   }
 
 
-  // Palette editing with natural language
-  async editPalette(request: PaletteEditRequest): Promise<PaletteEditResponse> {
-    return this.post<PaletteEditResponse>(API_ENDPOINTS.EDIT_PALETTE, request);
-  }
-
-  // Accessibility validation
-  async validateAccessibility(request: AccessibilityValidationRequest): Promise<AccessibilityValidationResponse> {
-    return this.post<AccessibilityValidationResponse>(API_ENDPOINTS.VALIDATE_ACCESSIBILITY, request);
-  }
-
-  // Export functions
+  // PNG export. The backend reads `colors` as a repeated form field
+  // (List[str] = Form(...)), so append one field per color.
   async exportPNG(request: ExportRequest): Promise<Blob> {
     const formData = new FormData();
-    formData.append('colors', JSON.stringify(request.colors));
-    formData.append('names', JSON.stringify(request.names));
-    if (request.formatOptions) {
-      formData.append('format_options', JSON.stringify(request.formatOptions));
-    }
+    request.colors.forEach((color) => formData.append('colors', color));
 
     return this.post<Blob>(API_ENDPOINTS.EXPORT_PNG, formData, {
-      timeout: API_CONFIG.EXPORT_TIMEOUT,
-    });
-  }
-
-  async exportJSON(request: ExportRequest): Promise<Record<string, unknown>> {
-    const params = new URLSearchParams({
-      colors: request.colors.join(','),
-      names: request.names.join(','),
-    });
-
-    return this.get<Record<string, unknown>>(`${API_ENDPOINTS.EXPORT_JSON}?${params}`);
-  }
-
-  async exportASE(request: ExportRequest): Promise<Blob> {
-    return this.post<Blob>(API_ENDPOINTS.EXPORT_ASE, request, {
       timeout: API_CONFIG.EXPORT_TIMEOUT,
     });
   }
