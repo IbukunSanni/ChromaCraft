@@ -40,7 +40,7 @@ The intended production arrangement is:
 
 - **Vercel:** `frontend/`
 - **Railway:** `backend/`
-- **PostgreSQL:** add later when cloud accounts and cross-device synchronization are implemented
+- **Supabase:** Postgres and Auth, added when cloud accounts and cross-device sync are built (after v1). FastAPI on Railway will be the only code that reads and writes it; the frontend uses Supabase only to sign in.
 - **IndexedDB:** planned first persistence layer for anonymous, local-first use
 
 ## Repository structure
@@ -92,7 +92,7 @@ PowerShell:
 python -m venv backend/.venv
 backend/.venv/Scripts/Activate.ps1
 python -m pip install --upgrade pip
-python -m pip install -r backend/requirements.txt
+python -m pip install -r backend/requirements-dev.txt
 ```
 
 macOS/Linux:
@@ -101,7 +101,7 @@ macOS/Linux:
 python -m venv backend/.venv
 source backend/.venv/bin/activate
 python -m pip install --upgrade pip
-python -m pip install -r backend/requirements.txt
+python -m pip install -r backend/requirements-dev.txt
 ```
 
 ### Configure the environment
@@ -119,8 +119,8 @@ MAX_REQUESTS_PER_MINUTE=60
 Optional CORS settings (defaults shown):
 
 ```env
-ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000,https://color-palette-extractor.vercel.app
-ALLOWED_ORIGIN_REGEX=https://color-palette-extractor(-[a-z0-9-]+)?\.vercel\.app
+ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
+ALLOWED_ORIGIN_REGEX=https://chroma-?craft-[a-z0-9-]+\.vercel\.app
 ```
 
 Never commit `.env` or expose `OPENAI_API_KEY` through a `NEXT_PUBLIC_*` variable.
@@ -154,16 +154,21 @@ Run the backend tests with the backend virtual environment active. Verified on N
 
 - `pnpm run build` (Next.js 15.5.29 production build): passes
 - `pnpm run test:frontend`: 5 suites, 63 tests pass
-- `pnpm run test:backend`: 59 tests pass in about 2 seconds
+- `pnpm run test:backend`: 62 tests pass in about 2 seconds
 - `pnpm run lint:frontend`: no warnings or errors (the backend has no linter configured yet)
 
-The first `/adjust-concept` request loads the sentence-transformer model, so it takes about 15 seconds; later requests are fast. `backend/demos/api_smoke_check.py` is a manual script that calls a running server on port 8000; it is not part of the pytest suite.
+The first `/adjust-concept` request downloads the embedding model's ONNX export from Hugging Face (about 45 MB, cached after that) and loads it through ONNX Runtime; later requests are fast. `backend/demos/api_smoke_check.py` is a manual script that calls a running server on port 8000; it is not part of the pytest suite.
 
 ## Deployment
 
-### Vercel frontend
+| Piece | Host | Names |
+|---|---|---|
+| Frontend | Vercel | project `chroma-craft`, production domain `https://chromacraft-app.vercel.app` |
+| Backend API | Railway | project `chroma-craft`, service `ChromaCraft`, domain `https://chromacraft-production.up.railway.app` |
 
-Create a Vercel project from this repository with:
+Both deploy from the `main` branch. Pushes to `dev` create Vercel preview deployments.
+
+### Vercel frontend (project `chroma-craft`)
 
 | Setting | Value |
 |---|---|
@@ -173,27 +178,29 @@ Create a Vercel project from this repository with:
 | Build Command | `pnpm build` |
 | Production Branch | `main` |
 
-Set this Vercel environment variable after Railway provides the public backend URL:
+Environment variable (Production and Preview):
 
 ```env
-NEXT_PUBLIC_API_URL=https://your-api.up.railway.app
+NEXT_PUBLIC_API_URL=https://chromacraft-production.up.railway.app
 ```
 
-Apply the variable to Production and Preview as appropriate, then redeploy. Without it, the production browser falls back to `http://localhost:8000` and cannot reach the deployed API.
+Next.js bakes `NEXT_PUBLIC_*` values into the build, so redeploy after changing it. Without it, the browser falls back to `http://localhost:8000` and cannot reach the deployed API.
 
-### Railway backend
+`chromacraft.vercel.app` belongs to an unrelated project, so the production domain is `chromacraft-app.vercel.app`. The old `color-palette-extractor.vercel.app` domain was removed.
 
-Create a Railway service from the same repository with:
+### Railway backend (project `chroma-craft`, service `ChromaCraft`)
+
+Railway settings live in `backend/railway.json` (start command `python server.py`, health check `/`, restart on failure). Railway does not apply the service's Root Directory to the config file path, so set it explicitly:
 
 | Setting | Value |
 |---|---|
 | Root Directory | `backend` |
-| Start Command | `uvicorn main:app --host 0.0.0.0 --port $PORT` |
-| Health-check Path | `/` |
+| Config-as-code path | `/backend/railway.json` |
+| Public domain | `chromacraft-production.up.railway.app`, targeting the port the app logs at startup (Railway's injected `PORT`, normally 8080) |
 
-`backend/Procfile` declares the same start command and `backend/.python-version` pins Python 3.12, so the builder can detect both from the `backend` root directory.
+`backend/server.py` reads `$PORT` and binds to `0.0.0.0`, so do not define a `PORT` variable yourself. `backend/Procfile` declares the same start command for builders that read Procfiles, and `backend/.python-version` pins Python 3.12. `requirements.txt` holds runtime dependencies only (test tools are in `requirements-dev.txt`), and the concept embeddings run on ONNX Runtime, so the image has no PyTorch.
 
-Set:
+Variables:
 
 ```env
 OPENAI_API_KEY=your_key
@@ -201,13 +208,9 @@ OPENAI_MODEL=gpt-4o-mini
 MAX_REQUESTS_PER_MINUTE=60
 ```
 
-Generate a public Railway domain for the service and use that URL as Vercel's `NEXT_PUBLIC_API_URL`.
-
-The existing `backend/render.yaml` is a Render configuration file. Railway and Vercel do not use it.
-
 ### Cross-origin requests
 
-CORS origins come from `ALLOWED_ORIGINS` (exact origins) and `ALLOWED_ORIGIN_REGEX` (default: this project's Vercel production and preview domains, `color-palette-extractor[-…].vercel.app`). If the production frontend uses a custom domain, add it to `ALLOWED_ORIGINS` in Railway.
+CORS origins come from `ALLOWED_ORIGINS` (exact origins, default: local development) and `ALLOWED_ORIGIN_REGEX`. The default regex matches the production domain `chromacraft-app.vercel.app` and the preview deployments, which Vercel names after the project (`chroma-craft-….vercel.app`). If the frontend gets a custom domain, add it to `ALLOWED_ORIGINS` in Railway.
 
 ## Deployment status
 
@@ -225,11 +228,14 @@ Fixed in the repository on November 13, 2026:
 5. The CORS wildcard is replaced by an origin list and regex set through environment variables.
 6. Console output no longer crashes on Windows when stdout is redirected (for example under `pnpm run dev`).
 
-Still to confirm in the provider dashboards:
+After PR #8 was merged on November 13, 2026:
 
-- Railway: Root Directory `backend`, `OPENAI_API_KEY` set, a public domain generated, and `/` reachable.
-- Vercel: `NEXT_PUBLIC_API_URL` set to the Railway domain for Production (and Preview if wanted), then redeploy.
-- The `torch` and `sentence-transformers` dependencies make the Railway image large. See the roadmap for the plan to remove them.
+- Vercel's production deploy succeeded, but it still called the old Render backend (`colorpaletteextractor.onrender.com`). That service no longer exists, and its 404 page has no CORS headers, so browsers reported a CORS error.
+- Railway built the backend, but the app did not answer on the public domain's port (`502 Application failed to respond`).
+
+Follow-up changes: the `chromacraft` naming, `backend/server.py` binding to `$PORT`, `backend/railway.json` with a health check, the CPU-only PyTorch build, and removal of the unused `backend/render.yaml`.
+
+Since then, the Vercel and Railway projects were renamed, the production domain became `chromacraft-app.vercel.app`, the Railway domain became `chromacraft-production.up.railway.app`, and `NEXT_PUBLIC_API_URL` (Production and Preview) points at that Railway domain.
 
 ## API surface currently implemented
 
@@ -249,7 +255,7 @@ Request and response field names are snake_case and match `backend/models/`. `fr
 
 The useful-v1 goal is not simply to produce five colors. It is to let a user create, refine, validate, save, recover, version, manage, and export an implementation-ready color system without requiring an account.
 
-The roadmap is benchmarked against Coolors Pro. Every tool that runs in the browser is free in ChromaCraft: palettes of up to 10 colors, contrast checking, shades and tints, color-blindness simulation, previews, share links, and exports. Only features with a running cost, such as AI volume and cloud sync, are candidates for a paid tier.
+The roadmap is benchmarked against Coolors and Adobe Color. The aim is Coolors' speed and AI plus Adobe Color's color theory and accessibility tools, free and without an account. Every tool that runs in the browser is free: palettes of up to 10 colors, all harmony rules, contrast and color-blindness checks, shades and tints, previews, share links, and exports to code, Figma tokens, and Adobe apps (ASE). Only features with a running cost, such as AI volume and cloud sync, are candidates for a paid tier.
 
 The complete scope, acceptance criteria, deferred features, and working rules are maintained in [TODO.md](./TODO.md).
 

@@ -26,47 +26,70 @@ Generation attracts a user. Checking, varying, sharing, and exporting are what m
 
 | User problem | ChromaCraft answer |
 |---|---|
-| "I need colors for this idea or photo." | Generate from an image, a written concept, or a harmony rule. |
+| "I need colors for this idea or photo." | Generate from an image (with a mood such as muted or bright), a written concept, or a harmony rule. |
+| "Which colors go together, by color theory?" | Eight harmony rules on a color wheel, built around a base color. |
 | "Keep the colors I like and change the rest." | Lock colors and regenerate with one key press. |
 | "Is this text readable?" | Contrast matrix with WCAG AA/AAA results, plus accessible alternatives. |
-| "Can people with color blindness tell these apart?" | Color-blindness simulation of the whole palette. |
+| "Can people with color blindness tell these apart?" | Color-blindness simulation, with the pairs that become hard to tell apart flagged. |
 | "I need lighter and darker versions of one color." | A shades-and-tints scale (50–950) for any color. |
 | "How will this look in a real UI?" | A preview that applies the palette's roles to page templates. |
-| "Get it into my code or design tool." | CSS, SCSS, Tailwind, design-token JSON, SVG, PNG, and copy-as-code. |
+| "Get it into my code or design tool." | CSS, SCSS, Tailwind, design-token JSON (Figma), ASE (Adobe apps), SVG, PNG, and copy-as-code. |
 | "Send it to someone, or open it on another device." | A share link that encodes the palette in the URL. No account or server storage. |
 | "Don't lose my work." | Local autosave, a palette library, and version history. |
 
-## Benchmark: Coolors Pro
+## Platform
 
-Coolors puts many of its tools behind a paid Pro plan. Most of those tools are pure color math that runs in the browser and costs nothing to serve. ChromaCraft's position: **every tool that runs in the browser is free and needs no account.** Only features with a running cost (AI generation volume, cloud sync, teams) could ever be paid.
+ChromaCraft uses the same stack as the other products: one host per job, no extra services without a measured need.
+
+| Job | Service | ChromaCraft |
+|---|---|---|
+| Frontend | Vercel | Project `chroma-craft`, `https://chromacraft-app.vercel.app` |
+| API (AI, images, palettes) | Railway | Service `ChromaCraft`, `https://chromacraft-production.up.railway.app` |
+| Database, sign-in, file storage | Supabase | Not needed until cloud persistence (after v1) |
+| Code, CI, dependency updates | GitHub | `IbukunSanni/ChromaCraft`, Actions, Dependabot |
+
+## Benchmark: Coolors and Adobe Color
+
+ChromaCraft is compared against the two tools people most often use for palettes:
+
+- **Coolors:** a fast generator with an AI palette tool. Many of its tools (more than 5 colors, contrast checks, variations, the visualizer, unlimited saving, advanced exports) appear on its paid Pro plan.
+- **Adobe Color** (now part of Adobe Express): free and strong on color theory. It has a color wheel with nine harmony rules, image extraction with color moods, gradient extraction, a contrast checker, and a color-blind-safe checker. Saving goes to Adobe Libraries and needs an Adobe sign-in, and its color wheel states that it does not use generative AI.
+
+ChromaCraft's position: **Coolors' speed and AI plus Adobe Color's color theory and accessibility tools, free, with no account, exporting into any tool (code, Figma tokens, and Adobe apps).** Every tool that runs in the browser is free. Only features with a running cost (AI generation volume, cloud sync, teams) could ever be paid.
 
 Size key: **S** = runs in the browser and reuses existing code. **M** = needs a new UI surface or depends on local storage. **L** = needs a backend, accounts, or a content library.
 
-| Coolors Pro capability | ChromaCraft today | Decision | Size | Phase |
-|---|---|---|---|---|
-| Palettes beyond 5 colors (up to 10) | Harmony and image fixed at 5; AI concept up to 8 | Adopt, free: 2–10 colors in every generator, add/remove colors | S | 1 |
-| AI palette generation | Concept → palette; image + concept transform | Keep; add rate and cost limits | — | 6 |
-| Pick colors from an image | Auto-extracts 5 dominant colors | Adopt: choose the extraction count (2–10), then a click-to-pick eyedropper on the uploaded image | S, then M | 1, 3 |
-| Contrast checker | Contrast math in `frontend/utils/color-utils.ts`; swatch badge exists but is disabled | Adopt, free: full contrast matrix with AA/AAA | S | 1 |
-| Color and palette variations | Brightness/saturation helpers exist | Adopt: shades-and-tints scale per color; whole-palette lighter/darker/muted variants | S | 1 |
-| Palette visualizer | None | Adopt, small: one role-based template first, then three (landing page, dashboard, mobile) | M | 3, 7 |
-| Save unlimited palettes | None | Adopt: local library in IndexedDB, no account | M | 2, 4 |
-| Save individual colors | None | Adopt: favorite colors in the local library | S | 4 |
-| Projects and collections | None | Adopt: collections and tags in the local library | M | 7 |
-| Advanced export options | Basic PNG endpoint | Adopt: CSS, SCSS, Tailwind (v3 and v4), design-token JSON, SVG, PNG with names, copy-as-code | M | 5 |
-| Gradients | None | Adopt: CSS gradient from the palette, copy and export | S | 5 |
-| Color libraries | XKCD color names | Adopt open libraries: nearest Tailwind and CSS named color. Skip licensed libraries such as Pantone. | S | 5 |
-| Dark mode | Done | — | — | — |
-| No ads | No ads | — | — | — |
-| Large catalog of ready-made palettes | None | Later: start with a small curated starter set; a catalog needs content and a backend | L | After v1 |
-| Public or private profile page | None | After cloud accounts | L | After v1 |
-| Collages, saved fonts, PDF export with a custom logo | None | Not pursuing for v1 | L | Deferred |
+The Coolors column reflects the features listed on its Pro plan page (checked November 13, 2026); some may also be partly free. The Adobe Color column reflects color.adobe.com, checked the same day.
 
-Additions beyond the benchmark list that are cheap and solve real problems:
+| Capability | Coolors | Adobe Color | ChromaCraft today | Decision | Size | Phase |
+|---|---|---|---|---|---|---|
+| Harmony rules | Generator (rules not listed) | 9: analogous, complementary, split complementary, triad, square, compound, shades, monochromatic, custom | 6 in the backend (no compound or shades); only 4 offered in the UI | Offer all rules in the UI and add compound and shades. "Custom" comes from manual editing (Phase 3). | S | 1 |
+| Color wheel editing | — | Drag color stops on a wheel | None | Adopt: wheel with draggable stops, kept in sync with the palette | M | 3 |
+| Palette size | Up to 10 (Pro) | Add colors | Harmony and image fixed at 5; AI up to 8 | Free: 2–10 colors in every generator, add/remove colors | S | 1 |
+| AI generation | Coolors AI (Pro) | Not on the color wheel ("does not use generative AI") | Concept → palette; image + concept transform | Keep as a differentiator; add rate and cost limits | — | 6 |
+| Palette from an image | Pick colors from an image (Pro list) | Extract with moods (colorful, bright, muted, deep, dark); JPEG, PNG, WebP up to 40 MB | Auto-extracts 5 colors; JPG/PNG up to 10 MB | Choose the count 2–10 (P1); moods and a click-to-pick eyedropper (P3); accept WebP (P6) | S–M | 1, 3, 6 |
+| Gradients | Save gradients (Pro) | Extract a gradient from an image | None | CSS gradient from the palette (P5); gradient from an image (P7) | S, M | 5, 7 |
+| Contrast checker | Check palette contrast (Pro) | Contrast checker (WCAG) | Contrast math exists; swatch badge disabled | Free full matrix with AA/AAA, plus role pairs (P3) | S | 1 |
+| Color-blindness | — | Simulator and color-blind-safe check (deuteranopia, protanopia, tritanopia) | None | Simulate 4 types (adds achromatopsia) and flag pairs that become hard to tell apart | S | 1 |
+| Shades and variations | Palette variations (Pro) | Shades rule; adjust tints | Brightness/saturation helpers exist | Shades-and-tints scale (50–950) per color; whole-palette variants | S | 1 |
+| Undo/redo | — | Yes | None | Bounded undo/redo history | M | 3 |
+| UI preview | Palette Visualizer layouts (Pro) | Preview colors together | None | One role-based template, then three | M | 3, 7 |
+| Save palettes | Unlimited (Pro) | Adobe Libraries (sign-in) | None | Local library in IndexedDB, no account | M | 2, 4 |
+| Save single colors | Unlimited (Pro) | Libraries | None | Local favorite colors | S | 4 |
+| Projects and collections | Unlimited (Pro) | Libraries | None | Local collections and tags | M | 7 |
+| Ready-made palettes | 10M+ schemes | Explore palettes | None | Curated starter set (P7); a full catalog needs content and a backend | L | 7, after v1 |
+| Export | Advanced export options; PDF with custom logo (Pro) | Download HEX/RGB; Libraries for Adobe apps | Basic PNG endpoint | CSS, SCSS, Tailwind (v3 and v4), design-token JSON, SVG, PNG with names, ASE for Adobe apps, copy-as-code | M | 5 |
+| Color value formats | — | HEX, RGB | HEX | Copy as HEX, RGB, HSL, and OKLCH | S | 1 |
+| Named-color libraries | Color libraries (Pro) | — | XKCD names | Nearest Tailwind and CSS named color; skip licensed libraries such as Pantone | S | 5 |
+| Sharing | Profile pages (Pro) | Libraries | None | Share link that encodes the palette in the URL | S | 1 |
+| Account | Free account; Pro is paid | Adobe sign-in to save | None needed | No account for any browser tool | — | — |
+| Dark mode, no ads | Pro | — | Done | — | — | — |
+| Collages, saved fonts, profile pages | Pro | — | None | Not pursuing for v1 | L | Deferred |
 
-- Share link with the palette encoded in the URL (S, Phase 1)
-- Color-blindness simulation (S, Phase 1)
+Additions beyond both benchmarks that are cheap and solve real problems:
+
 - Spacebar to regenerate and a keyboard-first flow (S, Phase 1)
+- Contrast checks on the roles a UI actually uses (text on background, text on surface), not just color pairs (S, Phase 3)
 - Installable, offline-capable app for every non-AI feature (S–M, Phase 6)
 - Design-token JSON that opens in Figma token plugins and Style Dictionary (S, Phase 5)
 
@@ -74,17 +97,17 @@ Additions beyond the benchmark list that are cheap and solve real problems:
 
 ChromaCraft v1 is done only when a user can complete the following journey reliably:
 
-1. Create a palette of 2–10 colors from an image, a written concept, or a color-harmony generator.
+1. Create a palette of 2–10 colors from an image, a written concept, or any of the eight harmony rules.
 2. Edit any color, add or remove colors, reorder colors, and lock colors during regeneration (including with the spacebar).
 3. Assign practical roles such as primary, secondary, accent, surface, and text.
-4. See WCAG contrast results for the whole palette and for role pairs, and preview the palette under common color-blindness types.
+4. See WCAG contrast results for the whole palette and for role pairs, preview the palette under common color-blindness types, and see which pairs become hard to tell apart.
 5. Open a shades-and-tints scale for any color and add a step to the palette.
 6. Undo and redo edits without losing work.
 7. Share a palette as a link that opens the same palette on any device.
 8. Name and save a palette locally without creating an account.
 9. Reload the application and recover the last workspace and saved palettes.
 10. Open, rename, duplicate, archive, and delete a saved palette, and see and restore earlier versions.
-11. Export the result as PNG, SVG, CSS variables, Tailwind, and design-token JSON, and import a previously exported ChromaCraft JSON file.
+11. Export the result as PNG, SVG, CSS variables, Tailwind, design-token JSON, and ASE, and import a previously exported ChromaCraft JSON file.
 12. Complete the core journey on desktop and mobile using keyboard, mouse, or touch.
 
 The release also must meet these quality gates:
@@ -151,7 +174,10 @@ Phase order changed on November 13, 2026: the browser-only tools (Phase 1) now c
 Goal: a contributor can run, test, and deploy the existing application before new product work begins.
 
 - [x] Add or restore backend Pydantic request/response models.
-- [ ] Merge PR #8 into `main`. Then confirm the Railway settings (root directory `backend`, `OPENAI_API_KEY`, public domain) and Vercel's `NEXT_PUBLIC_API_URL`, and check that production `/` responds.
+- [x] Merge PR #8 into `main` (November 13, 2026).
+- [x] Rename the hosted resources: Vercel and Railway projects `chroma-craft`, production domain `chromacraft-app.vercel.app`, Railway domain `chromacraft-production.up.railway.app`, and `NEXT_PUBLIC_API_URL` pointed at Railway (November 13, 2026).
+- [ ] Railway: set the config-as-code path to `/backend/railway.json`, remove any manual `PORT` variable, set `OPENAI_API_KEY`, and check that `/` responds (it currently returns 502).
+- [ ] Vercel: set `NEXT_PUBLIC_API_URL` to the Railway domain for Production and Preview, redeploy, and confirm that palette generation works on the production site.
 - [ ] Add GitHub Actions CI: backend `pytest`, plus frontend lint, tests, and production build, on pull requests to `dev` and `main`.
 - [ ] Turn on Dependabot security updates. The vulnerable Next.js release blocked production deploys for months.
 - [ ] Install from a clean environment and correct dependency declarations.
@@ -163,7 +189,8 @@ Goal: a contributor can run, test, and deploy the existing application before ne
 - [x] Remove client methods for endpoints that are not part of the current scope, or implement the required endpoints.
 - [x] Make lint, frontend tests, backend tests, and frontend production build pass.
 - [ ] Fix `pnpm run setup:backend` on Windows, and use one virtual-environment folder name (`backend/venv` or `backend/.venv`) everywhere.
-- [ ] Remove the unused `backend/render.yaml`, and archive `.kiro/specs` so this file is the single plan.
+- [x] Remove the unused `backend/render.yaml`; Railway is the only backend host.
+- [ ] Archive `.kiro/specs` so this file is the single plan.
 - [ ] Update README setup, environment, and feature documentation from verified behavior.
 
 **Phase 0 exit criteria:** documented setup succeeds, CI passes, both applications start, and production serves the current `main`.
@@ -176,11 +203,13 @@ Goal: a user can generate, check, vary, and share a palette of up to 10 colors w
 - [ ] Merge the AI concept, harmony, and image flows into one workspace palette that every generator writes into. Locks then apply to every source.
 - [ ] Replace the client-side lock-position workaround (`frontend/lib/palette-locks.ts`) with ID-based locks, and let the backend accept locked positions.
 - [ ] Support 2–10 colors in every generator: add a `color_count` parameter to `/generate/random` and `/extract-colors`, offer up to 10 in the AI flow, and add add/remove-color controls. [S]
+- [ ] Offer all harmony rules in the UI (today only 4 of the backend's 6 are shown), and add compound and shades to the backend. [S]
 - [ ] Spacebar regenerates unlocked colors, and keyboard focus is preserved. [S]
 - [ ] Contrast matrix: every color against every other, with ratio and AA/AAA for normal and large text, reusing `color-utils.ts`. Turn on the swatch contrast badge. [S]
 - [ ] Shades-and-tints scale (50–950) for any color, with copy and "add to palette". [S]
 - [ ] Whole-palette variants: lighter, darker, muted, vivid. [S]
-- [ ] Color-blindness simulation (protanopia, deuteranopia, tritanopia, achromatopsia) for the whole palette. [S]
+- [ ] Color-blindness simulation (protanopia, deuteranopia, tritanopia, achromatopsia) for the whole palette, flagging pairs whose simulated colors become hard to tell apart. [S]
+- [ ] Copy any color as HEX, RGB, HSL, or OKLCH. [S]
 - [ ] Share link that encodes the palette in the URL, and opening that link restores it. [S]
 - [ ] Copy-as-code for the current palette: HEX list, CSS variables, and a Tailwind snippet. [S]
 - [ ] Tests for each pure function: contrast, scales, variants, simulation, and URL encoding round-trip.
@@ -216,6 +245,8 @@ Goal: generated colors can be refined into a practical color system.
 - [ ] Preserve roles and locked colors when regenerating where possible.
 - [ ] Live preview: one responsive template that uses the assigned roles. [M]
 - [ ] Eyedropper: click the uploaded image to pick an exact color into the palette. [M]
+- [ ] Image extraction moods (colorful, bright, muted, deep, dark) that choose different colors from the same image. [S–M]
+- [ ] Color wheel with draggable stops, kept in sync with the palette and the harmony rule. [M]
 
 **Phase 3 exit criteria:** a user can deliberately refine a generated palette, understand its accessibility, and undo mistakes.
 
@@ -244,6 +275,7 @@ Goal: users can take the palette directly into real design or development work, 
 - [ ] Export CSS custom properties and SCSS variables using semantic role names.
 - [ ] Export Tailwind colors: a v3 config object and a v4 `@theme` block, including shade scales.
 - [ ] Export design-token JSON in the W3C Design Tokens format, usable in Figma token plugins and Style Dictionary.
+- [ ] Export ASE (Adobe Swatch Exchange) so palettes open in Photoshop, Illustrator, and InDesign. [S]
 - [ ] Export a CSS gradient built from the palette. [S]
 - [ ] Show the nearest Tailwind and CSS named color for each swatch. [S]
 - [ ] Preview and copy export text before download.
@@ -258,7 +290,7 @@ Goal: the useful v1 workflow is trustworthy outside the developer's machine.
 
 - [ ] Add clear loading, empty, offline, timeout, and retry states.
 - [ ] Ensure AI failure leaves current and saved palettes intact.
-- [ ] Validate upload MIME type, decoded image content, dimensions, and file size.
+- [ ] Validate upload MIME type, decoded image content, dimensions, and file size; accept WebP as well as JPEG and PNG, and make the UI text match the real limits.
 - [ ] Add rate limiting and cost controls for AI endpoints.
 - [ ] Make the app installable (web app manifest) and keep every non-AI tool working offline. [S–M]
 - [ ] Add caching only after measuring repeated requests and defining privacy behavior.
@@ -271,36 +303,51 @@ Goal: the useful v1 workflow is trustworthy outside the developer's machine.
 
 ### Phase 7 — Benchmark extras (v1.1)
 
-Goal: close the remaining practical gaps with the benchmark using local-only features.
+Goal: close the remaining practical gaps with Coolors and Adobe Color using local-only features.
 
 - [ ] Collections and tags for saved palettes and colors. [M]
+- [ ] Extract a gradient from an uploaded image. [M]
 - [ ] Two more preview templates (dashboard, mobile app). [M]
 - [ ] A small curated starter set of palettes, grouped by use (brand, UI, data visualization). [M]
 
 ## After useful v1
 
-### Cloud persistence
+### Cloud persistence (Supabase)
 
-Cloud persistence is the next milestone, not a prerequisite for validating the local-first product.
+Cloud persistence is the next milestone, not a prerequisite for validating the local-first product. It uses Supabase Postgres for data and Supabase Auth for sign-in.
+
+How the pieces fit:
+
+- The frontend uses `supabase-js` only to sign in. It sends the user's access token with each request to the API.
+- FastAPI on Railway verifies the token against the Supabase project's published signing keys and is the only code that reads or writes the database. Every query is scoped to the signed-in user.
+- Row-level security is enabled on every table with no public policies, so the public anon key cannot read data directly.
+- Railway connects through Supabase's **session pooler** connection string, which works over IPv4. Railway's outbound IPv6 is off by default, and Supabase's direct database host is IPv6-only.
+- The Supabase project lives in the same region as the Railway service.
+- The Phase 2 `PaletteRepository` gets a second implementation that calls the API, so local and cloud storage share one interface.
 
 When users need cross-device access beyond share links:
 
-- [ ] Add PostgreSQL-backed users, palettes, palette versions, and optional source-image records.
-- [ ] Add managed authentication rather than implementing password storage.
+- [ ] Create a `chromacraft` Supabase project in the Railway service's region.
+- [ ] Add tables for palettes, palette versions, and optional source-image records, with SQLAlchemy models and Alembic migrations in `backend/` (row-level security policies included in the migrations).
+- [ ] Sign in with Supabase Auth (email magic link, plus Google and GitHub); ChromaCraft never stores passwords.
+- [ ] Verify Supabase access tokens in FastAPI and reject requests for another user's data.
+- [ ] Set the variables: on Railway, `DATABASE_URL` (session pooler) and `SUPABASE_URL`; on Vercel, `NEXT_PUBLIC_SUPABASE_URL` and the public anon (publishable) key. Never expose the service-role key to the browser.
 - [ ] Keep anonymous local use available.
 - [ ] Offer an explicit local-to-cloud import after sign-in.
 - [ ] Create a new version on sync conflict instead of silently overwriting.
 - [ ] Add read-only share links with revocation for saved palettes.
 - [ ] Add a public or private profile page.
-- [ ] Define account export and deletion behavior before launch.
+- [ ] Store source images only when a user explicitly keeps them, in a private Supabase Storage bucket.
+- [ ] Define account export and deletion behavior before launch, including deleting the Supabase Auth user and their storage files.
+- [ ] Plan for Supabase Pro once cloud sync is live: free projects pause after about a week without activity, and the free plan allows two active projects.
 
-Suggested backend resources:
+Suggested resources:
 
 ```text
-users
-palettes
-palette_versions
-source_images (optional, explicit retention only)
+auth.users          (managed by Supabase Auth)
+palettes            (owner = auth.users.id)
+palette_versions    (JSON snapshot per version)
+source_images       (optional, explicit retention only; files in Supabase Storage)
 ```
 
 Palette version snapshots may use JSON initially. Normalize color records only when real query requirements justify the added complexity.
@@ -308,7 +355,7 @@ Palette version snapshots may use JSON initially. Normalize color records only w
 ### Free and paid boundary (if ChromaCraft is ever monetized)
 
 - Always free: everything that runs in the browser (all generators except AI volume, palette size up to 10, contrast, variations, simulation, preview, exports, the local library, share links).
-- Candidates for a paid tier, because they have a running cost: higher AI generation limits, cloud sync across devices, team workspaces.
+- Candidates for a paid tier, because they have a running cost: higher AI generation limits, cloud sync across devices, team workspaces. Per-user limits and plans would live in Supabase Postgres.
 
 ## Deferred until after useful v1
 
@@ -321,12 +368,12 @@ These ideas may be valuable later but currently dilute the core outcome:
 - Licensed color libraries (for example Pantone)
 - Native mobile and desktop applications
 - Browser extensions
-- Figma or Adobe plugins (design-token JSON export covers the first need)
+- Figma or Adobe plugins (design-token JSON and ASE exports cover the first need)
 - Team and enterprise collaboration
 - Batch processing
 - Embed codes
 - Advanced analytics and A/B testing
-- ASE, GPL, and other specialist formats
+- GPL and other specialist formats (ASE is in Phase 5)
 - Redis or complex infrastructure without measured need
 
 ## Working rules
@@ -342,8 +389,8 @@ These ideas may be valuable later but currently dilute the core outcome:
 
 ## Immediate next actions
 
-1. Merge PR #8, finish the Railway and Vercel settings, and confirm production responds.
+1. Finish the `chromacraft` renames and the Railway and Vercel settings, and confirm production responds.
 2. Add CI and Dependabot so `main` cannot silently break again.
 3. Build the one-workspace palette model (Phase 1, first two items).
-4. Ship the Phase 1 tools in this order: 2–10 colors, contrast matrix, shades and tints, share link, color-blindness simulation, copy-as-code.
+4. Ship the Phase 1 tools in this order: 2–10 colors, all harmony rules, contrast matrix, shades and tints, share link, color-blindness check, copy-as-code.
 5. Continue through Phases 2–6 until every useful v1 Definition of Done item is verified.

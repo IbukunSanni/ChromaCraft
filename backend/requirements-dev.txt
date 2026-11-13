@@ -1,0 +1,4 @@
+# Everything the app needs, plus the tools for running its tests locally.
+-r requirements.txt
+
+pytest==8.3.4

@@ -1,3 +1,6 @@
+# Runtime dependencies only: this is what Railway installs. Test tools are in
+# requirements-dev.txt.
+
 # Core FastAPI dependencies
 fastapi==0.115.12
 uvicorn==0.34.2
@@ -10,11 +13,14 @@ pillow==11.2.1
 colorthief==0.2.1
 
 # AI and ML
+# The concept embeddings run the model's ONNX export through ONNX Runtime, so
+# there is no torch, transformers or sentence-transformers in the image.
 openai==1.57.4
-sentence-transformers==4.1.0
+onnxruntime==1.32.0
+tokenizers==0.21.1
+huggingface_hub==0.30.2
 scikit-learn==1.6.1
 numpy==2.2.5
-torch==2.7.0
 
 # Environment and configuration
 python-dotenv==1.0.1
@@ -22,9 +28,6 @@ python-dotenv==1.0.1
 # HTTP requests
 requests==2.32.3
 httpx==0.28.1
-
-# Testing
-pytest==8.3.4
 
 # Optional: Memory monitoring
 psutil==7.0.0
