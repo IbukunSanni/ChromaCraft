@@ -16,7 +16,7 @@ The product direction is to grow this into a persistent color-system workspace w
 - Switch between light and dark themes
 - Generate a basic PNG palette
 
-Features described in the roadmap—including durable palette storage, manual color editing, reordering, undo/redo, semantic roles, contrast validation, and additional exports—are not complete yet.
+Features described in the roadmap are not built yet. These include palettes of up to 10 colors in every generator, the contrast matrix, shades and tints, color-blindness simulation, share links, durable palette storage, manual color editing, reordering, undo/redo, semantic roles, and additional exports.
 
 ## Architecture
 
@@ -248,6 +248,8 @@ Request and response field names are snake_case and match `backend/models/`. `fr
 ## Product direction
 
 The useful-v1 goal is not simply to produce five colors. It is to let a user create, refine, validate, save, recover, version, manage, and export an implementation-ready color system without requiring an account.
+
+The roadmap is benchmarked against Coolors Pro. Every tool that runs in the browser is free in ChromaCraft: palettes of up to 10 colors, contrast checking, shades and tints, color-blindness simulation, previews, share links, and exports. Only features with a running cost, such as AI volume and cloud sync, are candidates for a paid tier.
 
 The complete scope, acceptance criteria, deferred features, and working rules are maintained in [TODO.md](./TODO.md).
 
