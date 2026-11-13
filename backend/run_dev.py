@@ -8,6 +8,13 @@ import uvicorn
 import sys
 import os
 
+# Avoid UnicodeEncodeError on Windows consoles/pipes that use cp1252.
+for _stream in (sys.stdout, sys.stderr):
+    try:
+        _stream.reconfigure(errors="backslashreplace")
+    except (AttributeError, ValueError):
+        pass
+
 
 def check_venv():
     """Check if we're running in a virtual environment"""

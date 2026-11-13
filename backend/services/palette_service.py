@@ -11,7 +11,7 @@ from utils.color_harmony import (
     validate_color_harmony,
 )
 from utils.find_closest_color_name import find_closest_color_name
-from utils.openai_palette_generator import openai_generator
+from utils.openai_palette_generator import get_openai_generator
 from mycolors.xkcd_colors import xkcd_colors
 
 
@@ -88,7 +88,7 @@ class PaletteService:
         print(f"📊 Color count: {color_count}")
         
         # Generate palette using OpenAI
-        result = await openai_generator.generate_palette_from_concept(
+        result = await get_openai_generator().generate_palette_from_concept(
             concept=concept,
             color_count=color_count
         )

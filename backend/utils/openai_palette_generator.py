@@ -272,5 +272,25 @@ Consider the emotions, objects, lighting, and atmosphere this concept evokes. Re
             }
         }
 
-# Global instance
-openai_generator = OpenAIPaletteGenerator()
+class AIUnavailableError(RuntimeError):
+    """Raised when AI generation is requested but OpenAI is not configured."""
+
+
+_openai_generator = None
+
+
+def get_openai_generator() -> OpenAIPaletteGenerator:
+    """
+    Return the shared generator, creating it on first use.
+
+    Creating the client lazily lets the API start (and serve image, harmony,
+    and export endpoints) when OPENAI_API_KEY is not configured.
+    """
+    global _openai_generator
+    if _openai_generator is None:
+        if not Config.OPENAI_API_KEY:
+            raise AIUnavailableError(
+                "AI palette generation is unavailable: OPENAI_API_KEY is not configured"
+            )
+        _openai_generator = OpenAIPaletteGenerator()
+    return _openai_generator
