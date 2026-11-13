@@ -114,6 +114,15 @@ OPENAI_MODEL=gpt-4o-mini
 MAX_REQUESTS_PER_MINUTE=60
 ```
 
+`OPENAI_API_KEY` is only needed for `/generate/concept`. Without it the API still starts; that endpoint returns `503` and every other feature keeps working.
+
+Optional CORS settings (defaults shown):
+
+```env
+ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000,https://color-palette-extractor.vercel.app
+ALLOWED_ORIGIN_REGEX=https://color-palette-extractor(-[a-z0-9-]+)?\.vercel\.app
+```
+
 Never commit `.env` or expose `OPENAI_API_KEY` through a `NEXT_PUBLIC_*` variable.
 
 ### Run both applications
@@ -141,7 +150,14 @@ pnpm run test:frontend
 pnpm run test:backend
 ```
 
-The repository is currently in Phase 0 of the roadmap. These commands are the target quality gate, but the backend is not yet expected to pass because the missing request/response model module must be restored.
+Run the backend tests with the backend virtual environment active. Verified on November 13, 2026 (Windows 11, Python 3.12, Node 22):
+
+- `pnpm run build` (Next.js 15.5.29 production build): passes
+- `pnpm run test:frontend`: 5 suites, 63 tests pass
+- `pnpm run test:backend`: 59 tests pass in about 2 seconds
+- `pnpm run lint:frontend`: no warnings or errors (the backend has no linter configured yet)
+
+The first `/adjust-concept` request loads the sentence-transformer model, so it takes about 15 seconds; later requests are fast. `backend/demos/api_smoke_check.py` is a manual script that calls a running server on port 8000; it is not part of the pytest suite.
 
 ## Deployment
 
@@ -175,6 +191,8 @@ Create a Railway service from the same repository with:
 | Start Command | `uvicorn main:app --host 0.0.0.0 --port $PORT` |
 | Health-check Path | `/` |
 
+`backend/Procfile` declares the same start command and `backend/.python-version` pins Python 3.12, so the builder can detect both from the `backend` root directory.
+
 Set:
 
 ```env
@@ -189,39 +207,29 @@ The existing `backend/render.yaml` is a Render configuration file. Railway and V
 
 ### Cross-origin requests
 
-The FastAPI CORS configuration must explicitly allow the production Vercel domain. A string such as `https://*.vercel.app` in `allow_origins` is not a wildcard match. Use an explicit canonical origin and, if preview deployments are required, a constrained `allow_origin_regex`.
+CORS origins come from `ALLOWED_ORIGINS` (exact origins) and `ALLOWED_ORIGIN_REGEX` (default: this project's Vercel production and preview domains, `color-palette-extractor[-…].vercel.app`). If the production frontend uses a custom domain, add it to `ALLOWED_ORIGINS` in Railway.
 
-## Confirmed deployment status
+## Deployment status
 
-The latest checked commit, `8f9c4ad`, failed on both providers on July 28, 2026.
+On July 28, 2026, commit `8f9c4ad` failed on both providers:
 
-### Vercel: confirmed failure
+- **Vercel** rejected the build because `next@15.2.4` is affected by CVE-2025-66478.
+- **Railway** could not start the API, because `main:app` failed to import.
 
-The Vercel build compiled the frontend, passed type checking, and generated all static pages. Vercel then rejected the deployment because the project uses `next@15.2.4`, a version affected by CVE-2025-66478.
+Fixed in the repository on November 13, 2026:
 
-Vercel blocks new deployments of affected Next.js versions. The correct fix is to upgrade Next.js and its lockfile to a currently supported patched release, run the frontend tests and production build, and redeploy. Do not bypass the protection with `DANGEROUSLY_DEPLOY_VULNERABLE_CVE_2025_66478`.
+1. `backend/models/` (the Pydantic request/response models) had been excluded by a broad `models/` rule in `.gitignore`. It is now tracked.
+2. The color-name loader now reads the XKCD dataset's current JSON shape. Before this, it crashed on import.
+3. The OpenAI client and the sentence-transformer model now load on first use. The API starts in about a second, without an OpenAI key and without loading `torch`.
+4. Next.js is upgraded to the patched `15.5.29`, and the stale npm `frontend/package-lock.json` is removed. `pnpm-lock.yaml` is the only lockfile.
+5. The CORS wildcard is replaced by an origin list and regex set through environment variables.
+6. Console output no longer crashes on Windows when stdout is redirected (for example under `pnpm run dev`).
 
-### Railway: deployment failure confirmed; application blockers identified
+Still to confirm in the provider dashboards:
 
-GitHub reports the latest Railway deployment as failed. Provider logs were not available in the current development session, but the repository contains deployment-blocking backend problems:
-
-1. `backend/routes/palettes.py` and `backend/routes/colors.py` import a `models` module that does not exist in the repository.
-2. Railway must use `backend` as its root directory; there is no Railway configuration at the repository root to guarantee this automatically.
-3. The service must bind to Railway's injected `$PORT`, not the hard-coded port in `backend/render.yaml`.
-4. The Python dependency set includes large ML packages such as `torch` and `sentence-transformers`, which significantly increase build time and image size. They should remain only if the current concept-adjustment implementation truly requires them.
-
-Even after a successful dependency installation, the missing `models` module prevents `main:app` from importing, so the API cannot start.
-
-### Deployment recovery order
-
-1. Restore the backend Pydantic request and response models.
-2. Confirm `python -c "import main"` succeeds from `backend/`.
-3. Configure Railway's root directory, start command, variables, and public domain.
-4. Upgrade Next.js from the vulnerable release and update `pnpm-lock.yaml`.
-5. Run backend tests, frontend tests, and the frontend production build.
-6. Set `NEXT_PUBLIC_API_URL` in Vercel to the Railway domain.
-7. Add the Vercel production origin to FastAPI CORS.
-8. Deploy Railway first, verify `/`, then deploy Vercel and exercise every user workflow.
+- Railway: Root Directory `backend`, `OPENAI_API_KEY` set, a public domain generated, and `/` reachable.
+- Vercel: `NEXT_PUBLIC_API_URL` set to the Railway domain for Production (and Preview if wanted), then redeploy.
+- The `torch` and `sentence-transformers` dependencies make the Railway image large. See the roadmap for the plan to remove them.
 
 ## API surface currently implemented
 
@@ -235,7 +243,7 @@ Even after a successful dependency installation, the missing `models` module pre
 | `POST` | `/adjust-concept` | Transform a palette toward a concept |
 | `POST` | `/export-png` | Generate a PNG palette |
 
-Some methods declared in `frontend/lib/api-client.ts`, including accessibility validation and JSON/ASE export, do not yet have matching backend routes.
+Request and response field names are snake_case and match `backend/models/`. `frontend/lib/api-client.ts` only declares methods for the routes above. `/generate/random` returns locked colors first, and the frontend puts them back at the positions where they were locked (`frontend/lib/palette-locks.ts`).
 
 ## Product direction
 

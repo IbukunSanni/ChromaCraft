@@ -2,7 +2,7 @@
 
 > Current focus: turn palette generation into a reliable, persistent color-system workspace.
 >
-> Last reviewed: July 28, 2026
+> Last reviewed: November 13, 2026
 
 ## Product value
 
@@ -64,7 +64,7 @@ Items outside this Definition of Done are deferred unless they directly unblock 
 - [x] Random and harmony-based palette generation
 - [x] Color naming using the XKCD color dataset
 - [x] Click-to-copy color values
-- [x] Lock/unlock colors during regeneration
+- [x] Lock/unlock colors during regeneration (locked colors keep their position)
 - [x] Basic keyboard interaction for palette swatches
 - [x] Light/dark theme support
 - [x] Basic PNG generation
@@ -73,14 +73,14 @@ Items outside this Definition of Done are deferred unless they directly unblock 
 
 ### Known gaps and inconsistencies
 
-- [ ] Restore the missing backend request/response models imported by the routes.
+- [x] Restore the missing backend request/response models imported by the routes.
 - [ ] Ensure all backend dependencies, including OpenAI, install from `requirements.txt`.
 - [ ] Make the documented setup commands work on supported Windows shells.
-- [ ] Reconcile frontend-only API declarations with real backend endpoints.
-- [ ] Verify the PNG request format agrees between frontend and backend.
-- [ ] Remove or update stale README/TODO claims.
-- [ ] Resolve text/emoji encoding corruption where it appears.
-- [ ] Remove or properly ignore temporary development files.
+- [x] Reconcile frontend-only API declarations with real backend endpoints.
+- [x] Verify the PNG request format agrees between frontend and backend.
+- [x] Remove or update stale README/TODO claims.
+- [ ] Resolve text/emoji encoding corruption where it appears. (The Windows `UnicodeEncodeError` crash is fixed; emoji in UI copy and logs remain.)
+- [x] Remove or properly ignore temporary development files.
 
 ## Execution plan
 
@@ -90,12 +90,12 @@ Work in order. Do not begin a later phase while an earlier phase has release-blo
 
 Goal: a contributor can run and test the existing application before new product work begins.
 
-- [ ] Add or restore backend Pydantic request/response models.
+- [x] Add or restore backend Pydantic request/response models.
 - [ ] Install from a clean environment and correct dependency declarations.
-- [ ] Start frontend and backend together and exercise every implemented endpoint.
-- [ ] Align API paths, payload names, response types, and error shapes.
-- [ ] Remove client methods for endpoints that are not part of the current scope, or implement the required endpoints.
-- [ ] Make lint, frontend tests, backend tests, and frontend production build pass.
+- [ ] Start frontend and backend together and exercise every implemented endpoint. (All endpoints except a live `/generate/concept` call were exercised on November 13, 2026.)
+- [ ] Align API paths, payload names, response types, and error shapes. (Paths, payloads, and response types now match. Error shapes are still inconsistent: concept validation errors return 500.)
+- [x] Remove client methods for endpoints that are not part of the current scope, or implement the required endpoints.
+- [x] Make lint, frontend tests, backend tests, and frontend production build pass.
 - [ ] Update README setup, environment, and feature documentation from verified behavior.
 
 **Phase 0 exit criteria:** documented setup succeeds, both applications start, production frontend build passes, and the test suites run without collection or import errors.
