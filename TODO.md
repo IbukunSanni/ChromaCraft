@@ -176,13 +176,15 @@ Goal: a contributor can run, test, and deploy the existing application before ne
 - [x] Add or restore backend Pydantic request/response models.
 - [x] Merge PR #8 into `main` (November 13, 2026).
 - [x] Rename the hosted resources: Vercel and Railway projects `chroma-craft`, production domain `chromacraft-app.vercel.app`, Railway domain `chromacraft-production.up.railway.app`, and `NEXT_PUBLIC_API_URL` pointed at Railway (November 13, 2026).
-- [ ] Railway: set the config-as-code path to `/backend/railway.json`, remove any manual `PORT` variable, set `OPENAI_API_KEY`, and check that `/` responds (it currently returns 502).
-- [ ] Vercel: set `NEXT_PUBLIC_API_URL` to the Railway domain for Production and Preview, redeploy, and confirm that palette generation works on the production site.
+- [x] Railway: the domain targets port 8000 to match the app, and `/` responds (fixed November 13, 2026; the 502 was an 8080/8000 mismatch).
+- [x] Vercel: `NEXT_PUBLIC_API_URL` points at the Railway domain for Production and Preview, and palette generation works on `chromacraft-app.vercel.app` (verified November 13, 2026).
+- [ ] Railway: set the config-as-code path to `/backend/railway.json` so deploys use `python server.py` and the `/` health check. Afterwards, check that the deploy log port still matches the domain's port (8000).
+- [ ] Decide whether production gets AI text-to-palette: set `OPENAI_API_KEY` on Railway with a dedicated, budget-capped OpenAI project key, or hide the AI card when no key is set.
 - [ ] Add GitHub Actions CI: backend `pytest`, plus frontend lint, tests, and production build, on pull requests to `dev` and `main`.
 - [ ] Turn on Dependabot security updates. The vulnerable Next.js release blocked production deploys for months.
 - [ ] Install from a clean environment and correct dependency declarations.
 - [ ] Decide on `torch`/`sentence-transformers`. `/adjust-concept` uses them only to score a concept against six words, at the cost of a ~15 s first request, ~440 MB of memory, and a multi-GB image. Replace them with OpenAI embeddings or AI-returned adjustment weights, or keep them and document the cost.
-- [ ] Start frontend and backend together and exercise every implemented endpoint. (All endpoints except a live `/generate/concept` call were exercised on November 13, 2026.)
+- [ ] Start frontend and backend together and exercise every implemented endpoint. (Every endpoint was exercised locally and in production on November 13, 2026, except a live OpenAI `/generate/concept` call, which needs `OPENAI_API_KEY`.)
 - [ ] Align API paths, payload names, response types, and error shapes. (Paths, payloads, and response types now match.)
   - [ ] Return 400/422, not 500, for concept validation errors, and use the codes in `backend/constants/error_codes.py`.
   - [ ] Route image upload and concept adjustment through the API client, and show their errors in the UI.

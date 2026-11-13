@@ -196,9 +196,11 @@ Railway settings live in `backend/railway.json` (start command `python server.py
 |---|---|
 | Root Directory | `backend` |
 | Config-as-code path | `/backend/railway.json` |
-| Public domain | `chromacraft-production.up.railway.app`, targeting the port the app logs at startup (Railway's injected `PORT`, normally 8080) |
+| Public domain | `chromacraft-production.up.railway.app`, targeting port **8000** |
 
-`backend/server.py` reads `$PORT` and binds to `0.0.0.0`, so do not define a `PORT` variable yourself. `backend/Procfile` declares the same start command for builders that read Procfiles, and `backend/.python-version` pins Python 3.12. `requirements.txt` holds runtime dependencies only (test tools are in `requirements-dev.txt`), and the concept embeddings run on ONNX Runtime, so the image has no PyTorch.
+The domain's target port must match the port in the deploy log line `Uvicorn running on http://0.0.0.0:<port>` (or `ChromaCraft API listening on 0.0.0.0:<port>` when `server.py` is used). If they differ, Railway answers every request with `502 Application failed to respond`, and browsers report it as a CORS error.
+
+The service currently runs Railway's detected start command (`uvicorn` on port 8000), because the config-as-code path is not set yet. Once `/backend/railway.json` is set, the start command becomes `python server.py`, which binds to `$PORT` (8000 when unset), and the `/` health check gates deploys. `backend/Procfile` declares the same start command, and `backend/.python-version` pins Python 3.12. `requirements.txt` holds runtime dependencies only (test tools are in `requirements-dev.txt`), and the concept embeddings run on ONNX Runtime, so the image has no PyTorch.
 
 Variables:
 
@@ -235,7 +237,13 @@ After PR #8 was merged on November 13, 2026:
 
 Follow-up changes: the `chromacraft` naming, `backend/server.py` binding to `$PORT`, `backend/railway.json` with a health check, the CPU-only PyTorch build, and removal of the unused `backend/render.yaml`.
 
-Since then, the Vercel and Railway projects were renamed, the production domain became `chromacraft-app.vercel.app`, the Railway domain became `chromacraft-production.up.railway.app`, and `NEXT_PUBLIC_API_URL` (Production and Preview) points at that Railway domain.
+Since then, the Vercel and Railway projects were renamed, the production domain became `chromacraft-app.vercel.app`, the Railway domain became `chromacraft-production.up.railway.app`, and `NEXT_PUBLIC_API_URL` (Production and Preview) points at that Railway domain. The remaining 502 was a port mismatch: the app listened on 8000 while the domain targeted 8080.
+
+**Production is working as of November 13, 2026** (after PR #9 and the domain port change to 8000):
+
+- `https://chromacraft-app.vercel.app` calls `https://chromacraft-production.up.railway.app`; CORS allows the production origin and rejects others.
+- Verified live: health check, harmony generation with a locked color (it keeps its position), image extraction, "Transform with AI" on ONNX (about 1.4 s on the first call, 0.3 s after), and PNG export.
+- `/generate/concept` returns `503` because `OPENAI_API_KEY` is not set on Railway. Every other feature works without it.
 
 ## API surface currently implemented
 
