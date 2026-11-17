@@ -1,0 +1,37 @@
+# Weekly version updates, opened against dev so CI checks them before they
+# reach main. Minor and patch bumps are grouped into one pull request per
+# ecosystem; major bumps arrive separately because they can break things.
+#
+# Security updates are a separate repository setting (Settings → Advanced
+# Security → Dependabot security updates). GitHub always opens those against
+# the default branch (main), whatever target-branch says here.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    target-branch: dev
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      npm-minor-and-patch:
+        update-types: [minor, patch]
+
+  - package-ecosystem: pip
+    directory: /backend
+    target-branch: dev
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      pip-minor-and-patch:
+        update-types: [minor, patch]
+
+  - package-ecosystem: github-actions
+    directory: /
+    target-branch: dev
+    schedule:
+      interval: weekly
+    groups:
+      github-actions:
+        patterns: ["*"]
